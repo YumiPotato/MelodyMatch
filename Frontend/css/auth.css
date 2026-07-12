@@ -1,0 +1,107 @@
+:root {
+    --bg: #0f0b14;
+    --panel: #1a1220;
+    --text: #fff5f9;
+    --muted: #caaec0;
+    --accent: #f3b7cf;
+    --accent-strong: #ff86b1;
+    --border: rgba(255,255,255,0.09);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, #0f0b14, #1d1121 70%, #130913);
+    min-height: 100vh;
+}
+
+.auth-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    width: min(100%, 440px);
+    background: rgba(26, 18, 32, 0.95);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+
+.auth-header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.7rem;
+}
+
+.auth-header p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.1);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.auth-form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.4rem;
+}
+
+.auth-form label {
+    display: grid;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.auth-form input {
+    padding: 0.85rem 0.95rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #241629;
+    color: var(--text);
+    outline: none;
+}
+
+.auth-form button {
+    margin-top: 0.4rem;
+    border: none;
+    padding: 0.9rem 1rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #221018;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-footer {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.auth-footer p,
+.ghost-link {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.auth-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
