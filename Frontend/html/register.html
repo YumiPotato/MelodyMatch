@@ -7,8 +7,12 @@
 
     <title>MelodyMatch - Register</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- CSS -->
-    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20260821">
 </head>
 
 <body>
@@ -24,10 +28,10 @@
              MELODYMATCH LOGO
         ================================= -->
 
-        <div class="logo">
+        <div class="logo" aria-label="MelodyMatch home">
 
-            <div class="logo-icon">
-                ♪
+            <div class="logo-mark" aria-hidden="true">
+                <span class="mark-wave">♪</span>
             </div>
 
             <div class="logo-text">
@@ -43,171 +47,308 @@
 
         <div class="register-card">
 
+            <div id="accountSelectionStep">
 
-            <!-- ================================
-                 PROGRESS
-            ================================= -->
+                <!-- ================================
+                     PROGRESS
+                ================================= -->
 
-            <div class="progress-section">
+                <div class="progress-section">
 
-                <div class="progress-text">
+                    <div class="progress-text">
 
-                    <span>Step 1 of 2</span>
+                        <span>Step 1 of 2</span>
 
-                    <span>50%</span>
+                        <span>50%</span>
 
-                </div>
-
-
-                <div class="progress-bar">
-
-                    <div class="progress-fill"></div>
-
-                </div>
-
-            </div>
-
-
-            <!-- ================================
-                 TITLE
-            ================================= -->
-
-            <div class="title-section">
-
-                <h1>
-                    How will you use MelodyMatch?
-                </h1>
-
-                <p>
-                    Choose the account that best describes you.
-                </p>
-
-            </div>
-
-
-            <!-- ================================
-                 ACCOUNT OPTIONS
-            ================================= -->
-
-            <div class="account-options">
-
-
-                <!-- ============================
-                     LISTENER
-                ============================= -->
-
-                <button
-                    type="button"
-                    class="account-card active"
-                    onclick="selectAccount(this)"
-                >
-
-                    <div class="account-icon">
-                        🎧
                     </div>
 
-                    <h2>
-                        Listener
-                    </h2>
+
+                    <div class="progress-bar">
+
+                        <div class="progress-fill"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     TITLE
+                ================================= -->
+
+                <div class="title-section">
+
+                    <h1>
+                        How will you use MelodyMatch?
+                    </h1>
 
                     <p>
-                        Discover music, follow artists,
-                        and receive personalized recommendations.
+                        Choose the account that best describes you.
                     </p>
 
-
-                    <div class="selection">
-
-                        <div class="radio"></div>
-
-                        <span>Select Listener</span>
-
-                    </div>
-
-                </button>
+                </div>
 
 
-                <!-- ============================
-                     ARTIST
-                ============================= -->
+                <!-- ================================
+                     ACCOUNT OPTIONS
+                ================================= -->
 
-                <button
-                    type="button"
-                    class="account-card"
-                    onclick="selectAccount(this)"
-                >
-
-                    <div class="account-icon">
-                        🎤
-                    </div>
-
-                    <h2>
-                        Artist
-                    </h2>
-
-                    <p>
-                        Create your artist profile, share music,
-                        and connect with your listeners.
-                    </p>
+                <div class="account-options">
 
 
-                    <div class="selection">
+                    <!-- ============================
+                         LISTENER
+                    ============================= -->
 
-                        <div class="radio"></div>
+                    <button
+                        type="button"
+                        class="account-card active"
+                        onclick="selectAccount(this)"
+                    >
 
-                        <span>Select Artist</span>
+                        <div class="account-icon">
+                            🎧
+                        </div>
 
-                    </div>
+                        <h2>
+                            Listener
+                        </h2>
 
-                </button>
+                        <p>
+                            Discover music, follow artists,
+                            and receive personalized recommendations.
+                        </p>
+
+
+                        <div class="selection">
+
+                            <div class="radio"></div>
+
+                            <span>Select Listener</span>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- ============================
+                         ARTIST
+                    ============================= -->
+
+                    <button
+                        type="button"
+                        class="account-card"
+                        onclick="selectAccount(this)"
+                    >
+
+                        <div class="account-icon">
+                            🎤
+                        </div>
+
+                        <h2>
+                            Artist
+                        </h2>
+
+                        <p>
+                            Create your artist profile, share music,
+                            and connect with your listeners.
+                        </p>
+
+
+                        <div class="selection">
+
+                            <div class="radio"></div>
+
+                            <span>Select Artist</span>
+
+                        </div>
+
+                    </button>
+
+                </div>
+
+                <!-- ================================
+                     CONTINUE
+                ================================= -->
+
+                <div class="continue-section">
+
+                    <button
+                        type="button"
+                        class="continue-button"
+                        onclick="continueRegistration()"
+                    >
+
+                        Continue
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
 
             </div>
 
 
-            <!-- ================================
-                 STEP COMPLETE
-            ================================= -->
+            <div id="detailsStep" class="details-step">
 
-            <div class="step-complete">
+                <div class="progress-section">
 
-                <div class="check-icon">
-                    ✓
-                </div>
+                    <div class="progress-text">
 
-                <div class="complete-text">
+                        <span>Step 2 of 2</span>
 
-                    <strong>
-                        Step 1 complete
-                    </strong>
+                        <span>100%</span>
 
-                    <span>
-                        Select an account type to continue
-                    </span>
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="progress-fill progress-fill-final"></div>
+
+                    </div>
 
                 </div>
 
-            </div>
+                <div class="title-section">
 
+                    <h1 id="detailsTitle">
+                        Tell us about your listening profile
+                    </h1>
 
-            <!-- ================================
-                 CONTINUE
-            ================================= -->
+                    <p id="detailsSubtitle">
+                        Add a few details so we can personalize your experience.
+                    </p>
 
-            <div class="continue-section">
+                </div>
 
-                <button
-                    type="button"
-                    class="continue-button"
-                    onclick="continueRegistration()"
-                >
+                <form class="detail-form active" data-form="listener">
 
-                    Continue
+                    <div class="stacked-card-group">
 
-                    <span>
-                        →
-                    </span>
+                        <div class="stacked-card">
+                            <h3>User information</h3>
 
-                </button>
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="listenerName">Full name</label>
+                                    <input id="listenerName" type="text" placeholder="Your name" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="listenerEmail">Email address</label>
+                                    <input id="listenerEmail" type="email" placeholder="you@example.com" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="listenerPassword">Password</label>
+                                    <input id="listenerPassword" type="password" placeholder="Create a password" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="listenerConfirmPassword">Confirm password</label>
+                                    <input id="listenerConfirmPassword" type="password" placeholder="Confirm your password" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stacked-card">
+                            <h3>Listening profile</h3>
+
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="listenerGenre">Favorite genre</label>
+                                    <select id="listenerGenre">
+                                        <option>Pop</option>
+                                        <option>Hip-Hop</option>
+                                        <option>R&B</option>
+                                        <option>Rock</option>
+                                        <option>Electronic</option>
+                                        <option>Indie</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="listenerMood">Listening mood</label>
+                                    <input id="listenerMood" type="text" placeholder="Chill, upbeat, late-night...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="back-button" onclick="showSelectionStep()">Back</button>
+                        <button type="submit" class="submit-button">Create account</button>
+                    </div>
+                </form>
+
+                <form class="detail-form" data-form="artist">
+
+                    <div class="stacked-card-group">
+
+                        <div class="stacked-card">
+                            <h3>User information</h3>
+
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="artistUsername">Username</label>
+                                    <input id="artistUsername" type="text" placeholder="Choose a username" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistEmail">Email address</label>
+                                    <input id="artistEmail" type="email" placeholder="artist@example.com" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistPassword">Password</label>
+                                    <input id="artistPassword" type="password" placeholder="Create a password" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistConfirmPassword">Confirm password</label>
+                                    <input id="artistConfirmPassword" type="password" placeholder="Confirm your password" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stacked-card">
+                            <h3>Artist profile</h3>
+
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="artistName">Artist name</label>
+                                    <input id="artistName" type="text" placeholder="Your stage name" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistGenre">Primary genre</label>
+                                    <select id="artistGenre">
+                                        <option>Pop</option>
+                                        <option>Hip-Hop</option>
+                                        <option>R&B</option>
+                                        <option>Rock</option>
+                                        <option>Electronic</option>
+                                        <option>Alternative</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-group full-width">
+                                    <label for="artistBio">Artist bio</label>
+                                    <textarea id="artistBio" rows="4" placeholder="Tell listeners about your sound and story..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="back-button" onclick="showSelectionStep()">Back</button>
+                        <button type="submit" class="submit-button">Create profile</button>
+                    </div>
+                </form>
 
             </div>
 
@@ -217,15 +358,12 @@
             ================================= -->
 
             <div class="login-section">
+                <span>Already have an account?</span>
+                <a href="login.html" class="login-link">Log in</a>
 
-                <span>
-                    Already have an account?
-                </span>
-
-                <a href="#">
-                    Log in
-                </a>
-
+                <div class="home-link-wrap">
+                    <a href="homepage.html" class="home-link">Return to homepage</a>
+                </div>
             </div>
 
         </div>
@@ -252,79 +390,60 @@
 
         let selectedAccount = "listener";
 
+        const selectionStep = document.getElementById("accountSelectionStep");
+        const detailsStep = document.getElementById("detailsStep");
+        const detailsTitle = document.getElementById("detailsTitle");
+        const detailsSubtitle = document.getElementById("detailsSubtitle");
+        const detailForms = document.querySelectorAll(".detail-form");
 
         function selectAccount(card) {
 
-            /*
-             * Remove active state
-             * from every account card.
-             */
-
-            const cards =
-                document.querySelectorAll(".account-card");
-
+            const cards = document.querySelectorAll(".account-card");
 
             cards.forEach(function(item) {
-
                 item.classList.remove("active");
-
             });
-
-
-            /*
-             * Add active state
-             * to selected card.
-             */
 
             card.classList.add("active");
 
-
-            /*
-             * Determine selected account.
-             */
-
             if (card.querySelector("h2").textContent.trim() === "Listener") {
-
                 selectedAccount = "listener";
-
             } else {
-
                 selectedAccount = "artist";
-
             }
-
         }
 
+        function showSelectionStep() {
+            selectionStep.style.display = "block";
+            detailsStep.classList.remove("active");
+        }
 
         function continueRegistration() {
+            selectionStep.style.display = "none";
+            detailsStep.classList.add("active");
 
             if (selectedAccount === "listener") {
-
-                console.log("Listener selected");
-
-                /*
-                 * Change this later to your
-                 * actual listener registration page.
-                 *
-                 * Example:
-                 * window.location.href = "listener-register.html";
-                 */
-
+                detailsTitle.textContent = "Tell us about your listening profile";
+                detailsSubtitle.textContent = "Add a few details so we can personalize your experience.";
             } else {
-
-                console.log("Artist selected");
-
-                /*
-                 * Change this later to your
-                 * actual artist registration page.
-                 *
-                 * Example:
-                 * window.location.href = "artist-register.html";
-                 */
-
+                detailsTitle.textContent = "Tell us about your artist profile";
+                detailsSubtitle.textContent = "Share your sound, style, and story with listeners.";
             }
 
+            detailForms.forEach(function(form) {
+                form.classList.toggle("active", form.dataset.form === selectedAccount);
+            });
         }
+
+        document.querySelector("form[data-form='listener']").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Listener account submitted");
+        });
+
+        document.querySelector("form[data-form='artist']").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Artist account submitted");
+        });
 
     </script>
 
