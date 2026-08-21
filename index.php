@@ -1,3 +1,3 @@
 <?php
-header('Location: Frontend/php/homepage.php');
+header('Location: Frontend/html/register.html');
 exit;

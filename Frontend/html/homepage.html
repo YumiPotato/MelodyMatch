@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MelodyMatch | Music Discovery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css">
+</head>
+<body>
+<div class="page-shell">
+    <aside class="sidebar"><div class="brand-block"><div class="brand-mark">MM</div><div><h2>MelodyMatch</h2><p>Gen-Z sound space</p></div></div>
+        <nav><a href="#discover">✦ Discover</a><a href="#playlists">♪ Playlists</a><a href="#artists">☾ Artists</a><a href="#library">♡ Library</a></nav>
+        <div class="auth-actions"><a class="nav-btn" href="login.php">Login</a><a class="nav-btn alt" href="register.php">Register</a></div>
+    </aside>
+    <main class="main-content">
+        <header class="topbar"><div class="search-box"><span>🔎</span><input type="text" placeholder="Search songs, artists, playlists..."></div><button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button><div class="profile-pill">MV</div></header>
+        <section class="hero-card" id="discover"><div><p class="eyebrow">New mood</p><h1>Feel the vibe with soft pink playlists and chill discoveries.</h1><p>Browse featured playlists, explore artists and find your next favorite sound.</p></div><a class="button primary" href="#playlists">Explore playlists</a></section>
+        <section class="section"><div class="section-title"><h3>Featured Playlists</h3><a href="#">See all</a></div><div class="card-grid" id="playlists">
+            <article class="music-card"><div class="cover pink"></div><h4>Midnight Chill</h4><p>Lo-fi, jazz and calm evenings</p></article><article class="music-card"><div class="cover purple"></div><h4>Focus Flow</h4><p>Soft beats for studying and working</p></article><article class="music-card"><div class="cover rose"></div><h4>Feel Good Hits</h4><p>Bright pop and uplifting tracks</p></article>
+        </div></section>
+        <section class="section"><div class="section-title"><h3>Popular Artists</h3><a href="#">View more</a></div><div class="artist-list" id="artists">
+            <div class="artist-item"><div class="avatar">A</div><div><strong>Ava Lane</strong><p>Indie pop • 120K listeners</p></div></div><div class="artist-item"><div class="avatar">N</div><div><strong>Noah Reed</strong><p>Alternative • 98K listeners</p></div></div><div class="artist-item"><div class="avatar">M</div><div><strong>Mia Sol</strong><p>R&amp;B • 87K listeners</p></div></div>
+        </div></section>
+        <section class="section"><div class="section-title"><h3>Your Library</h3><a href="#">Manage</a></div><div class="library-list" id="library">
+            <div class="library-item"><span>♡</span><div><strong>Liked Songs</strong><p>243 tracks</p></div></div><div class="library-item"><span>♪</span><div><strong>Recently Played</strong><p>14 recent listens</p></div></div><div class="library-item"><span>✦</span><div><strong>Saved Playlists</strong><p>6 curated lists</p></div></div>
+        </div></section>
+    </main>
+</div>
+<div class="preference-modal" id="preferenceModal" role="dialog" aria-modal="true" aria-labelledby="preferenceTitle" hidden><div class="preference-dialog"><button class="modal-close" type="button" id="skipPreferences" aria-label="Skip music preferences">×</button><p class="eyebrow">Make it yours</p><h2 id="preferenceTitle">What do you love listening to?</h2><p>Choose one or more genres to personalize your recommendations. You can change this anytime.</p><form id="preferencesForm"><div class="preference-options">
+    <label><input type="checkbox" name="genres" value="Pop"> <span>Pop</span></label><label><input type="checkbox" name="genres" value="Rock"> <span>Rock</span></label><label><input type="checkbox" name="genres" value="Hip-Hop"> <span>Hip-Hop</span></label><label><input type="checkbox" name="genres" value="R&amp;B"> <span>R&amp;B</span></label><label><input type="checkbox" name="genres" value="Jazz"> <span>Jazz</span></label><label><input type="checkbox" name="genres" value="Classical"> <span>Classical</span></label><label><input type="checkbox" name="genres" value="Electronic"> <span>Electronic</span></label><label><input type="checkbox" name="genres" value="Country"> <span>Country</span></label>
+    </div><p class="modal-error" id="preferenceError" aria-live="polite"></p><div class="modal-actions"><button type="button" class="button text-button" id="skipButton">Skip for now</button><button type="submit" class="button primary">Save preferences</button></div></form></div></div>
+<script>
+const modal=document.getElementById('preferenceModal'),themeToggle=document.getElementById('themeToggle'),savedTheme=localStorage.getItem('melodyMatchTheme'),prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(theme){document.documentElement.dataset.theme=theme;themeToggle.textContent=theme==='dark'?'☀️ Light':'🌙 Dark';} applyTheme(savedTheme||(prefersDark?'dark':'light')); themeToggle.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem('melodyMatchTheme',theme);applyTheme(theme);});
+if(new URLSearchParams(window.location.search).get('preferences')==='1'){modal.hidden=false;document.body.classList.add('modal-open');} const closeModal=()=>{modal.hidden=true;document.body.classList.remove('modal-open');history.replaceState({},'','homepage.php');}; document.getElementById('skipPreferences').addEventListener('click',closeModal);document.getElementById('skipButton').addEventListener('click',closeModal);document.getElementById('preferencesForm').addEventListener('submit',event=>{event.preventDefault();const selected=[...event.currentTarget.querySelectorAll('input:checked')];if(!selected.length){document.getElementById('preferenceError').textContent='Choose at least one genre or select Skip for now.';return;}localStorage.setItem('melodyMatchGenres',JSON.stringify(selected.map(item=>item.value)));closeModal();});
+</script>
+</body>
+</html>

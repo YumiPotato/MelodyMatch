@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MelodyMatch | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css">
+</head>
+<body>
+    <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
+    <div class="auth-shell"><div class="auth-card">
+        <div class="auth-header"><p class="eyebrow">Welcome back</p><h1>Log in to MelodyMatch</h1><p>Pick up where your sound left off.</p></div>
+        <form class="auth-form" action="homepage.php" method="get">
+            <label>Email<input type="email" placeholder="you@example.com" autocomplete="email" required></label>
+            <label>Password<input type="password" placeholder="Enter your password" autocomplete="current-password" required></label>
+            <input type="hidden" name="preferences" value="1"><button type="submit">Login</button>
+        </form>
+        <div class="auth-footer"><p>New here? <a href="register.php">Create an account</a></p><a class="ghost-link" href="homepage.php">Back to home</a></div>
+    </div></div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        function applyTheme(theme) { document.documentElement.dataset.theme = theme; themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark'; }
+        applyTheme(savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => { const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('melodyMatchTheme', theme); applyTheme(theme); });
+    </script>
+</body>
+</html>

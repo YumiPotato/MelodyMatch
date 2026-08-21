@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MelodyMatch - Register</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body>
+
+    <!-- ================================
+         PAGE
+    ================================= -->
+
+    <div class="page">
+
+
+        <!-- ================================
+             MELODYMATCH LOGO
+        ================================= -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                ♪
+            </div>
+
+            <div class="logo-text">
+                Melody<span>Match</span>
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             REGISTRATION CARD
+        ================================= -->
+
+        <div class="register-card">
+
+
+            <!-- ================================
+                 PROGRESS
+            ================================= -->
+
+            <div class="progress-section">
+
+                <div class="progress-text">
+
+                    <span>Step 1 of 2</span>
+
+                    <span>50%</span>
+
+                </div>
+
+
+                <div class="progress-bar">
+
+                    <div class="progress-fill"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================
+                 TITLE
+            ================================= -->
+
+            <div class="title-section">
+
+                <h1>
+                    How will you use MelodyMatch?
+                </h1>
+
+                <p>
+                    Choose the account that best describes you.
+                </p>
+
+            </div>
+
+
+            <!-- ================================
+                 ACCOUNT OPTIONS
+            ================================= -->
+
+            <div class="account-options">
+
+
+                <!-- ============================
+                     LISTENER
+                ============================= -->
+
+                <button
+                    type="button"
+                    class="account-card active"
+                    onclick="selectAccount(this)"
+                >
+
+                    <div class="account-icon">
+                        🎧
+                    </div>
+
+                    <h2>
+                        Listener
+                    </h2>
+
+                    <p>
+                        Discover music, follow artists,
+                        and receive personalized recommendations.
+                    </p>
+
+
+                    <div class="selection">
+
+                        <div class="radio"></div>
+
+                        <span>Select Listener</span>
+
+                    </div>
+
+                </button>
+
+
+                <!-- ============================
+                     ARTIST
+                ============================= -->
+
+                <button
+                    type="button"
+                    class="account-card"
+                    onclick="selectAccount(this)"
+                >
+
+                    <div class="account-icon">
+                        🎤
+                    </div>
+
+                    <h2>
+                        Artist
+                    </h2>
+
+                    <p>
+                        Create your artist profile, share music,
+                        and connect with your listeners.
+                    </p>
+
+
+                    <div class="selection">
+
+                        <div class="radio"></div>
+
+                        <span>Select Artist</span>
+
+                    </div>
+
+                </button>
+
+            </div>
+
+
+            <!-- ================================
+                 STEP COMPLETE
+            ================================= -->
+
+            <div class="step-complete">
+
+                <div class="check-icon">
+                    ✓
+                </div>
+
+                <div class="complete-text">
+
+                    <strong>
+                        Step 1 complete
+                    </strong>
+
+                    <span>
+                        Select an account type to continue
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================
+                 CONTINUE
+            ================================= -->
+
+            <div class="continue-section">
+
+                <button
+                    type="button"
+                    class="continue-button"
+                    onclick="continueRegistration()"
+                >
+
+                    Continue
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- ================================
+                 LOGIN
+            ================================= -->
+
+            <div class="login-section">
+
+                <span>
+                    Already have an account?
+                </span>
+
+                <a href="#">
+                    Log in
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             FOOTER
+        ================================= -->
+
+        <div class="footer">
+
+            © 2026 MelodyMatch · Made for music lovers
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+        let selectedAccount = "listener";
+
+
+        function selectAccount(card) {
+
+            /*
+             * Remove active state
+             * from every account card.
+             */
+
+            const cards =
+                document.querySelectorAll(".account-card");
+
+
+            cards.forEach(function(item) {
+
+                item.classList.remove("active");
+
+            });
+
+
+            /*
+             * Add active state
+             * to selected card.
+             */
+
+            card.classList.add("active");
+
+
+            /*
+             * Determine selected account.
+             */
+
+            if (card.querySelector("h2").textContent.trim() === "Listener") {
+
+                selectedAccount = "listener";
+
+            } else {
+
+                selectedAccount = "artist";
+
+            }
+
+        }
+
+
+        function continueRegistration() {
+
+            if (selectedAccount === "listener") {
+
+                console.log("Listener selected");
+
+                /*
+                 * Change this later to your
+                 * actual listener registration page.
+                 *
+                 * Example:
+                 * window.location.href = "listener-register.html";
+                 */
+
+            } else {
+
+                console.log("Artist selected");
+
+                /*
+                 * Change this later to your
+                 * actual artist registration page.
+                 *
+                 * Example:
+                 * window.location.href = "artist-register.html";
+                 */
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
