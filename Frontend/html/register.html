@@ -9,7 +9,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20260821">
@@ -101,11 +102,7 @@
                          LISTENER
                     ============================= -->
 
-                    <button
-                        type="button"
-                        class="account-card active"
-                        onclick="selectAccount(this)"
-                    >
+                    <button type="button" class="account-card active" onclick="selectAccount(this)">
 
                         <div class="account-icon">
                             🎧
@@ -136,11 +133,7 @@
                          ARTIST
                     ============================= -->
 
-                    <button
-                        type="button"
-                        class="account-card"
-                        onclick="selectAccount(this)"
-                    >
+                    <button type="button" class="account-card" onclick="selectAccount(this)">
 
                         <div class="account-icon">
                             🎤
@@ -174,11 +167,7 @@
 
                 <div class="continue-section">
 
-                    <button
-                        type="button"
-                        class="continue-button"
-                        onclick="continueRegistration()"
-                    >
+                    <button type="button" class="continue-button" onclick="continueRegistration()">
 
                         Continue
 
@@ -245,12 +234,14 @@
 
                                 <div class="field-group">
                                     <label for="listenerPassword">Password</label>
-                                    <input id="listenerPassword" type="password" placeholder="Create a password" required>
+                                    <input id="listenerPassword" type="password" placeholder="Create a password"
+                                        required>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="listenerConfirmPassword">Confirm password</label>
-                                    <input id="listenerConfirmPassword" type="password" placeholder="Confirm your password" required>
+                                    <input id="listenerConfirmPassword" type="password"
+                                        placeholder="Confirm your password" required>
                                 </div>
                             </div>
                         </div>
@@ -310,7 +301,8 @@
 
                                 <div class="field-group">
                                     <label for="artistConfirmPassword">Confirm password</label>
-                                    <input id="artistConfirmPassword" type="password" placeholder="Confirm your password" required>
+                                    <input id="artistConfirmPassword" type="password"
+                                        placeholder="Confirm your password" required>
                                 </div>
                             </div>
                         </div>
@@ -338,7 +330,8 @@
 
                                 <div class="field-group full-width">
                                     <label for="artistBio">Artist bio</label>
-                                    <textarea id="artistBio" rows="4" placeholder="Tell listeners about your sound and story..."></textarea>
+                                    <textarea id="artistBio" rows="4"
+                                        placeholder="Tell listeners about your sound and story..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -400,7 +393,7 @@
 
             const cards = document.querySelectorAll(".account-card");
 
-            cards.forEach(function(item) {
+            cards.forEach(function (item) {
                 item.classList.remove("active");
             });
 
@@ -430,17 +423,17 @@
                 detailsSubtitle.textContent = "Share your sound, style, and story with listeners.";
             }
 
-            detailForms.forEach(function(form) {
+            detailForms.forEach(function (form) {
                 form.classList.toggle("active", form.dataset.form === selectedAccount);
             });
         }
 
-        document.querySelector("form[data-form='listener']").addEventListener("submit", function(event) {
+        document.querySelector("form[data-form='listener']").addEventListener("submit", function (event) {
             event.preventDefault();
             alert("Listener account submitted");
         });
 
-        document.querySelector("form[data-form='artist']").addEventListener("submit", function(event) {
+        document.querySelector("form[data-form='artist']").addEventListener("submit", function (event) {
             event.preventDefault();
             alert("Artist account submitted");
         });

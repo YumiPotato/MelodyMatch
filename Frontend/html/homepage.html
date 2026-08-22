@@ -1,130 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MelodyMatch | Music Discovery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20260821">
 </head>
+
 <body>
-<div class="page-shell">
-    <aside class="sidebar">
-        <div class="logo" aria-label="MelodyMatch home">
-            <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
-            <div class="logo-text">Melody<span>Match</span></div>
-        </div>
-        <nav><a href="#discover">✦ Discover</a><a href="#playlists">♪ Playlists</a><a href="#artists">☾ Artists</a><a href="#library">♡ Library</a></nav>
-        <div class="auth-actions"><a class="nav-btn" href="login.html">Login</a><a class="nav-btn alt" href="register.html">Register</a></div>
-    </aside>
-    <main class="main-content">
-        <header class="topbar"><div class="search-box"><span>🔎</span><input type="text" placeholder="Search songs, artists, playlists..."></div><button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button><div class="profile-pill" aria-hidden="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2c0-2.761 2.239-5 5-5s5 2.239 5 5h2c0-3.866-3.134-7-7-7z" fill="#FFFFFF"/></svg></div></header>
-        <section class="hero-card" id="discover"><div><p class="eyebrow">New mood</p><h1>Feel the vibe with soft pink playlists and chill discoveries.</h1><p>Browse featured playlists, explore artists and find your next favorite sound.</p></div><a class="button primary" href="#playlists">Explore playlists</a></section>
-        <section class="section"><div class="section-title"><h3>Featured Playlists</h3><a href="#">See all</a></div><div class="card-grid" id="playlists">
-            <article class="music-card"><div class="cover pink"></div><h4>Midnight Chill</h4><p>Lo-fi, jazz and calm evenings</p></article><article class="music-card"><div class="cover purple"></div><h4>Focus Flow</h4><p>Soft beats for studying and working</p></article><article class="music-card"><div class="cover rose"></div><h4>Feel Good Hits</h4><p>Bright pop and uplifting tracks</p></article>
-        </div></section>
-        <section class="section"><div class="section-title"><h3>Popular Artists</h3><a href="#">View more</a></div><div class="artist-list" id="artists">
-            <div class="artist-item"><div class="avatar">A</div><div><strong>Ava Lane</strong><p>Indie pop • 120K listeners</p></div></div><div class="artist-item"><div class="avatar">N</div><div><strong>Noah Reed</strong><p>Alternative • 98K listeners</p></div></div><div class="artist-item"><div class="avatar">M</div><div><strong>Mia Sol</strong><p>R&amp;B • 87K listeners</p></div></div>
-        </div></section>
-        <section class="section"><div class="section-title"><h3>Your Library</h3><a href="#">Manage</a></div><div class="library-list" id="library">
-            <div class="library-item"><span>♡</span><div><strong>Liked Songs</strong><p>243 tracks</p></div></div><div class="library-item"><span>♪</span><div><strong>Recently Played</strong><p>14 recent listens</p></div></div><div class="library-item"><span>✦</span><div><strong>Saved Playlists</strong><p>6 curated lists</p></div></div>
-        </div></section>
-    </main>
-</div>
-<div class="preference-modal" id="preferenceModal" role="dialog" aria-modal="true" aria-labelledby="preferenceTitle" hidden>
-    <div class="preference-dialog" role="document">
-        <button class="modal-close" type="button" id="skipPreferences" aria-label="Skip music preferences">×</button>
-        <p class="eyebrow">Make it yours</p>
-        <h2 id="preferenceTitle">What do you love listening to?</h2>
-        <p>Choose your favorite genres and current mood so we can personalize your sound for the day.</p>
-        <form id="preferencesForm">
-            <div class="stacked-card-group">
-                <div class="stacked-card">
-                    <p class="field-label">Mood</p>
-                    <div class="mood-options">
-                        <label><input type="radio" name="mood" value="Chill"> <span>Chill</span></label>
-                        <label><input type="radio" name="mood" value="Happy"> <span>Happy</span></label>
-                        <label><input type="radio" name="mood" value="Focused"> <span>Focused</span></label>
-                        <label><input type="radio" name="mood" value="Energetic"> <span>Energetic</span></label>
-                    </div>
-                </div>
-
-                <div class="stacked-card">
-                    <p class="field-label">Genres</p>
-                    <div class="preference-options">
-                        <label><input type="checkbox" name="genres" value="Pop"> <span>Pop</span></label>
-                        <label><input type="checkbox" name="genres" value="Rock"> <span>Rock</span></label>
-                        <label><input type="checkbox" name="genres" value="Hip-Hop"> <span>Hip-Hop</span></label>
-                        <label><input type="checkbox" name="genres" value="R&amp;B"> <span>R&amp;B</span></label>
-                        <label><input type="checkbox" name="genres" value="Jazz"> <span>Jazz</span></label>
-                        <label><input type="checkbox" name="genres" value="Classical"> <span>Classical</span></label>
-                        <label><input type="checkbox" name="genres" value="Electronic"> <span>Electronic</span></label>
-                        <label><input type="checkbox" name="genres" value="Country"> <span>Country</span></label>
-                    </div>
-                </div>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
             </div>
-
-            <p class="modal-error" id="preferenceError" aria-live="polite"></p>
-            <div class="modal-actions"><button type="button" class="button text-button" id="skipButton">Skip for now</button><button type="submit" class="button primary">Save preferences</button></div>
-        </form>
+            <nav><a href="#discover">✦ Discover</a><a href="#playlists">♪ Playlists</a><a href="#artists">☾
+                    Artists</a><a href="#library">♡ Library</a></nav>
+            <div class="auth-actions"><a class="nav-btn" href="login.html">Login</a><a class="nav-btn alt"
+                    href="register.html">Register</a></div>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <div class="search-box"><span>🔎</span><input type="text"
+                        placeholder="Search songs, artists, playlists..."></div><button class="theme-toggle"
+                    type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
+                <div class="profile-pill" aria-hidden="false"><svg width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path
+                            d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2c0-2.761 2.239-5 5-5s5 2.239 5 5h2c0-3.866-3.134-7-7-7z"
+                            fill="#FFFFFF" />
+                    </svg></div>
+            </header>
+            <section class="hero-card" id="discover">
+                <div>
+                    <p class="eyebrow">New mood</p>
+                    <h1>Feel the vibe with soft pink playlists and chill discoveries.</h1>
+                    <p>Browse featured playlists, explore artists and find your next favorite sound.</p>
+                </div><a class="button primary" href="#playlists">Explore playlists</a>
+            </section>
+            <section class="section">
+                <div class="section-title">
+                    <h3>Featured Playlists</h3><a href="#">See all</a>
+                </div>
+                <div class="card-grid" id="playlists">
+                    <article class="music-card">
+                        <div class="cover pink"></div>
+                        <h4>Midnight Chill</h4>
+                        <p>Lo-fi, jazz and calm evenings</p>
+                    </article>
+                    <article class="music-card">
+                        <div class="cover purple"></div>
+                        <h4>Focus Flow</h4>
+                        <p>Soft beats for studying and working</p>
+                    </article>
+                    <article class="music-card">
+                        <div class="cover rose"></div>
+                        <h4>Feel Good Hits</h4>
+                        <p>Bright pop and uplifting tracks</p>
+                    </article>
+                </div>
+            </section>
+            <section class="section">
+                <div class="section-title">
+                    <h3>Popular Artists</h3><a href="#">View more</a>
+                </div>
+                <div class="artist-list" id="artists">
+                    <div class="artist-item">
+                        <div class="avatar">A</div>
+                        <div><strong>Ariana Grande</strong>
+                            <p>Indie pop • 120K listeners</p>
+                        </div>
+                    </div>
+                    <div class="artist-item">
+                        <div class="avatar">N</div>
+                        <div><strong>BTS</strong>
+                            <p>Pop • 98K listeners</p>
+                        </div>
+                    </div>
+                    <div class="artist-item">
+                        <div class="avatar">M</div>
+                        <div><strong>ENHYPEN</strong>
+                            <p>R&amp;B • 87K listeners</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="section">
+                <div class="section-title">
+                    <h3>Your Library</h3><a href="#">Manage</a>
+                </div>
+                <div class="library-list" id="library">
+                    <div class="library-item"><span>♡</span>
+                        <div><strong>Liked Songs</strong>
+                            <p>243 tracks</p>
+                        </div>
+                    </div>
+                    <div class="library-item"><span>♪</span>
+                        <div><strong>Recently Played</strong>
+                            <p>14 recent listens</p>
+                        </div>
+                    </div>
+                    <div class="library-item"><span>✦</span>
+                        <div><strong>Saved Playlists</strong>
+                            <p>6 curated lists</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-</div>
-<script>
-const modal = document.getElementById('preferenceModal');
-const themeToggle = document.getElementById('themeToggle');
-const savedTheme = localStorage.getItem('melodyMatchTheme');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const todayKey = new Date().toISOString().slice(0,10);
+    <div class="preference-modal" id="preferenceModal" role="dialog" aria-modal="true" aria-labelledby="preferenceTitle"
+        hidden>
+        <div class="preference-dialog" role="document">
+            <button class="modal-close" type="button" id="skipPreferences"
+                aria-label="Skip music preferences">×</button>
+            <p class="eyebrow">Make it yours</p>
+            <h2 id="preferenceTitle">What do you love listening to?</h2>
+            <p>Choose your favorite genres and current mood so we can personalize your sound for the day.</p>
+            <form id="preferencesForm">
+                <div class="stacked-card-group">
+                    <div class="stacked-card">
+                        <p class="field-label">Mood</p>
+                        <div class="mood-options">
+                            <label><input type="radio" name="mood" value="Chill"> <span>Chill</span></label>
+                            <label><input type="radio" name="mood" value="Happy"> <span>Happy</span></label>
+                            <label><input type="radio" name="mood" value="Focused"> <span>Focused</span></label>
+                            <label><input type="radio" name="mood" value="Energetic"> <span>Energetic</span></label>
+                        </div>
+                    </div>
 
-function applyTheme(theme){
-    document.documentElement.dataset.theme = theme;
-    if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
-}
+                    <div class="stacked-card">
+                        <p class="field-label">Genres</p>
+                        <div class="preference-options">
+                            <label><input type="checkbox" name="genres" value="Pop"> <span>Pop</span></label>
+                            <label><input type="checkbox" name="genres" value="Rock"> <span>Rock</span></label>
+                            <label><input type="checkbox" name="genres" value="Hip-Hop"> <span>Hip-Hop</span></label>
+                            <label><input type="checkbox" name="genres" value="R&amp;B"> <span>R&amp;B</span></label>
+                            <label><input type="checkbox" name="genres" value="Jazz"> <span>Jazz</span></label>
+                            <label><input type="checkbox" name="genres" value="Classical">
+                                <span>Classical</span></label>
+                            <label><input type="checkbox" name="genres" value="Electronic">
+                                <span>Electronic</span></label>
+                            <label><input type="checkbox" name="genres" value="Country"> <span>Country</span></label>
+                        </div>
+                    </div>
+                </div>
 
-applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+                <p class="modal-error" id="preferenceError" aria-live="polite"></p>
+                <div class="modal-actions"><button type="button" class="button text-button" id="skipButton">Skip for
+                        now</button><button type="submit" class="button primary">Save preferences</button></div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const modal = document.getElementById('preferenceModal');
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const todayKey = new Date().toISOString().slice(0, 10);
 
-function markPromptSeen(){ localStorage.setItem('melodyMatchPromptDate', todayKey); }
-function closeModal(){ modal.hidden = true; document.body.classList.remove('modal-open'); markPromptSeen(); }
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
 
-const lastPromptDate = localStorage.getItem('melodyMatchPromptDate');
-const forceShow = new URLSearchParams(window.location.search).get('preferences') === '1';
-const shouldShowPrompt = forceShow || !lastPromptDate || lastPromptDate !== todayKey;
-if (shouldShowPrompt) { modal.hidden = false; document.body.classList.add('modal-open'); }
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
-if (themeToggle) themeToggle.addEventListener('click', () => {
-    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('melodyMatchTheme', theme);
-    applyTheme(theme);
-});
+        function markPromptSeen() { localStorage.setItem('melodyMatchPromptDate', todayKey); }
+        function closeModal() { modal.hidden = true; document.body.classList.remove('modal-open'); markPromptSeen(); }
 
-// Close buttons
-const skipPreferencesBtn = document.getElementById('skipPreferences');
-const skipButton = document.getElementById('skipButton');
-const prefsForm = document.getElementById('preferencesForm');
+        const lastPromptDate = localStorage.getItem('melodyMatchPromptDate');
+        const forceShow = new URLSearchParams(window.location.search).get('preferences') === '1';
+        const shouldShowPrompt = forceShow || !lastPromptDate || lastPromptDate !== todayKey;
+        if (shouldShowPrompt) { modal.hidden = false; document.body.classList.add('modal-open'); }
 
-skipPreferencesBtn?.addEventListener('click', closeModal);
-skipButton?.addEventListener('click', closeModal);
+        if (themeToggle) themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
 
-// Close when clicking outside the dialog
-modal?.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-});
+        // Close buttons
+        const skipPreferencesBtn = document.getElementById('skipPreferences');
+        const skipButton = document.getElementById('skipButton');
+        const prefsForm = document.getElementById('preferencesForm');
 
-// Close on Escape
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });
+        skipPreferencesBtn?.addEventListener('click', closeModal);
+        skipButton?.addEventListener('click', closeModal);
 
-// Save preferences
-prefsForm?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const selected = [...event.currentTarget.querySelectorAll('input[name="genres"]:checked')];
-    const selectedMood = event.currentTarget.querySelector('input[name="mood"]:checked');
-    if (!selectedMood || !selected.length) {
-        document.getElementById('preferenceError').textContent = 'Choose a mood and at least one genre, or select Skip for now.';
-        return;
-    }
-    localStorage.setItem('melodyMatchGenres', JSON.stringify(selected.map(item => item.value)));
-    localStorage.setItem('melodyMatchMood', selectedMood.value);
-    closeModal();
-});
-</script>
+        // Close when clicking outside the dialog
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });
+
+        // Save preferences
+        prefsForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const selected = [...event.currentTarget.querySelectorAll('input[name="genres"]:checked')];
+            const selectedMood = event.currentTarget.querySelector('input[name="mood"]:checked');
+            if (!selectedMood || !selected.length) {
+                document.getElementById('preferenceError').textContent = 'Choose a mood and at least one genre, or select Skip for now.';
+                return;
+            }
+            localStorage.setItem('melodyMatchGenres', JSON.stringify(selected.map(item => item.value)));
+            localStorage.setItem('melodyMatchMood', selectedMood.value);
+            closeModal();
+        });
+    </script>
 </body>
+
 </html>

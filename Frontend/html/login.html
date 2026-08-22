@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +9,34 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20260821">
     <style>
         /* layout tweaks for simplified login */
         /* card sizing: set to requested 520px max width */
-        .register-card { max-width: 520px; margin: 1rem auto; padding: 2rem; position: relative; }
-        .login-simple .field-group { margin-bottom: 1rem; }
-        .login-simple .field-group input { width: 100%; box-sizing: border-box; }
-        .button-row { display:flex; gap:0.75rem; align-items:center; }
+        .register-card {
+            max-width: 520px;
+            margin: 1rem auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .login-simple .field-group {
+            margin-bottom: 1rem;
+        }
+
+        .login-simple .field-group input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
 
         /* create-account styled as a subtle button without underline */
         .ghost-button {
@@ -33,12 +52,24 @@
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .ghost-button:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(219, 39, 119, 0.32); }
+
+        .ghost-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(219, 39, 119, 0.32);
+        }
+
         /* place login button on the right side */
-        .login-simple .form-actions { justify-content: flex-end; }
-        .login-simple .submit-button { width: auto; max-width: none; }
+        .login-simple .form-actions {
+            justify-content: flex-end;
+        }
+
+        .login-simple .submit-button {
+            width: auto;
+            max-width: none;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="page">
@@ -60,12 +91,14 @@
 
                 <div class="field-group">
                     <label for="loginEmail">Email address</label>
-                    <input id="loginEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+                    <input id="loginEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email"
+                        required>
                 </div>
 
                 <div class="field-group">
                     <label for="loginPassword">Password</label>
-                    <input id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    <input id="loginPassword" name="password" type="password" placeholder="Enter your password"
+                        autocomplete="current-password" required>
                 </div>
 
                 <div class="form-actions button-row">
@@ -92,11 +125,12 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
             // placeholder authentication flow
             // allow the form to submit normally to homepage.html (method=get)
         });
     </script>
 
 </body>
+
 </html>
