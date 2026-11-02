@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listener Profile | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Main navigation">
+                <a href="listener_homepage.html">✦ Discover</a>
+                <a href="listener_homepage.html#playlists">♪ Playlists</a>
+                <a href="listener_homepage.html#artists">☾ Artists</a>
+                <a href="listener_homepage.html#library">♡ Library</a>
+                <a class="active" href="listener_profile.html" aria-current="page">♙ Profile</a>
+            </nav>
+            <div class="profile-sidebar-note">
+                <span class="profile-status-dot" aria-hidden="true"></span>
+                Listener account
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb"><a href="listener_homepage.html">Home</a><span aria-hidden="true">/</span>
+                    Profile</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
+                    Dark</button>
+                <a class="profile-pill" href="listener_profile.html" aria-label="Listener profile">
+                    <span aria-hidden="true">L</span>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">Your space</p>
+                    <h1>Listener profile</h1>
+                    <p>Keep track of your account details and the music you’ve been exploring.</p>
+                </div>
+                <span class="account-badge"><span aria-hidden="true">●</span> Listener</span>
+            </section>
+
+            <section class="profile-overview" aria-labelledby="profileName">
+                <div class="profile-avatar" aria-hidden="true">♪</div>
+                <div class="profile-identity">
+                    <p class="profile-kicker">PROFILE</p>
+                    <h2 id="profileName">Your display name</h2>
+                    <p class="profile-username">@your-username</p>
+                    <p class="profile-photo-note">No profile picture added</p>
+                </div>
+                <a class="button primary profile-action" href="#account-settings">Edit profile <span
+                        aria-hidden="true">→</span></a>
+            </section>
+
+            <div class="profile-grid">
+                <section class="profile-card personal-card" aria-labelledby="personalHeading">
+                    <div class="profile-card-heading">
+                        <div>
+                            <p class="profile-kicker">ABOUT YOU</p>
+                            <h2 id="personalHeading">Personal information</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">♡</span>
+                    </div>
+                    <dl class="detail-list">
+                        <div><dt>Email address</dt><dd>Not connected</dd></div>
+                        <div><dt>Country</dt><dd>Not provided</dd></div>
+                        <div><dt>Joined</dt><dd>Not available</dd></div>
+                    </dl>
+                </section>
+
+                <section class="profile-card activity-card" aria-labelledby="activityHeading">
+                    <div class="profile-card-heading">
+                        <div>
+                            <p class="profile-kicker">YOUR LISTENING</p>
+                            <h2 id="activityHeading">Music activity</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">♪</span>
+                    </div>
+                    <div class="activity-stats">
+                        <article class="activity-stat">
+                            <span class="stat-icon" aria-hidden="true">♡</span>
+                            <div><strong>0</strong><span>Saved songs</span></div>
+                        </article>
+                        <article class="activity-stat">
+                            <span class="stat-icon" aria-hidden="true">♫</span>
+                            <div><strong>0</strong><span>Playlist history</span></div>
+                        </article>
+                    </div>
+                    <p class="card-footnote">Saved songs and playlists will appear here as you listen.</p>
+                </section>
+
+                <section class="profile-card preferences-card" aria-labelledby="preferencesHeading">
+                    <div class="profile-card-heading">
+                        <div>
+                            <p class="profile-kicker">DAY BY DAY</p>
+                            <h2 id="preferencesHeading">Recent music preferences</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">✦</span>
+                    </div>
+                    <p class="card-description">A snapshot of the moods and genres you chose each day—not permanent
+                        favorites.</p>
+                    <div class="preference-history" id="preferenceHistory" aria-live="polite">
+                        <p class="empty-state">No daily preferences saved yet. Choose today’s moods and genres from
+                            Discover to start your history.</p>
+                    </div>
+                    <p class="card-footnote">Your 7 most recent days are stored in this browser.</p>
+                </section>
+
+                <section class="profile-card settings-card" id="account-settings" aria-labelledby="settingsHeading">
+                    <div class="profile-card-heading">
+                        <div>
+                            <p class="profile-kicker">ACCOUNT</p>
+                            <h2 id="settingsHeading">Account settings</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">⚙</span>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Edit profile</strong><p>Update your display name, email, or profile picture.</p></div>
+                        <span class="setting-status">Unavailable in preview</span>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Change password</strong><p>Keep your account credentials up to date.</p></div>
+                        <span class="setting-status">Unavailable in preview</span>
+                    </div>
+                </section>
+
+                <section class="profile-card security-card" aria-labelledby="securityHeading">
+                    <div class="profile-card-heading">
+                        <div>
+                            <p class="profile-kicker">SAFETY &amp; ACCESS</p>
+                            <h2 id="securityHeading">Security</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">⌑</span>
+                    </div>
+                    <div class="security-status">
+                        <span class="status-indicator" aria-hidden="true"></span>
+                        <div><strong>Preview account</strong><p>Account status and sign-in are not connected yet.</p></div>
+                    </div>
+                    <a class="button sign-out-button" href="../login.html">Sign out <span aria-hidden="true">↗</span></a>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        const preferenceHistory = document.getElementById('preferenceHistory');
+        const historyValue = localStorage.getItem('melodyMatchPreferenceHistory');
+        if (historyValue) {
+            try {
+                const history = JSON.parse(historyValue);
+                if (!Array.isArray(history)) {
+                    throw new TypeError('Preference history must be a list.');
+                }
+
+                if (history.length) {
+                    preferenceHistory.replaceChildren();
+                    history.slice(0, 7).forEach(entry => {
+                        if (!entry || typeof entry.date !== 'string' ||
+                            !Array.isArray(entry.moods) || !Array.isArray(entry.genres)) {
+                            return;
+                        }
+
+                        const item = document.createElement('article');
+                        item.className = 'history-entry';
+                        const date = document.createElement('h3');
+                        const parsedDate = new Date(`${entry.date}T00:00:00`);
+                        date.textContent = Number.isNaN(parsedDate.getTime())
+                            ? entry.date
+                            : parsedDate.toLocaleDateString(undefined, {
+                                weekday: 'short',
+                                month: 'short',
+                                day: 'numeric'
+                            });
+                        item.append(date);
+
+                        [['Moods', entry.moods], ['Genres', entry.genres]].forEach(([label, values]) => {
+                            if (!values.length) return;
+                            const group = document.createElement('div');
+                            group.className = 'history-group';
+                            const heading = document.createElement('span');
+                            heading.className = 'history-label';
+                            heading.textContent = label;
+                            const tags = document.createElement('div');
+                            tags.className = 'history-tags';
+                            values.forEach(value => {
+                                if (typeof value !== 'string') return;
+                                const tag = document.createElement('span');
+                                tag.className = 'history-tag';
+                                tag.textContent = value;
+                                tags.append(tag);
+                            });
+                            group.append(heading, tags);
+                            item.append(group);
+                        });
+                        preferenceHistory.append(item);
+                    });
+                    if (!preferenceHistory.children.length) {
+                        preferenceHistory.innerHTML = '<p class="empty-state">No valid daily preferences found.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Could not read listener preference history.', error);
+                preferenceHistory.innerHTML = '<p class="empty-state">Preference history could not be loaded.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

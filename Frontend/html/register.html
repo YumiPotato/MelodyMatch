@@ -13,7 +13,7 @@
         rel="stylesheet">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20260821">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20261102-password-eye">
 </head>
 
 <body>
@@ -214,7 +214,9 @@
 
                 </div>
 
-                <form class="detail-form active" data-form="listener">
+                <form class="detail-form active" data-form="listener" action="../../Backend/php/register_process.php"
+                    method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="role" value="listener">
 
                     <div class="stacked-card-group">
 
@@ -223,51 +225,58 @@
 
                             <div class="form-grid">
                                 <div class="field-group">
-                                    <label for="listenerName">Full name</label>
-                                    <input id="listenerName" type="text" placeholder="Your name" required>
+                                    <label for="listenerName">Username</label>
+                                    <input id="listenerName" name="username" type="text" maxlength="100"
+                                        autocomplete="username" placeholder="Choose a username" required>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="listenerEmail">Email address</label>
-                                    <input id="listenerEmail" type="email" placeholder="you@example.com" required>
+                                    <input id="listenerEmail" name="email" type="email" maxlength="100"
+                                        autocomplete="email" placeholder="you@example.com" required>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="listenerPassword">Password</label>
-                                    <input id="listenerPassword" type="password" placeholder="Create a password"
-                                        required>
+                                    <div class="password-input-wrap">
+                                    <input id="listenerPassword" name="password" type="password" minlength="8"
+                                        autocomplete="new-password" placeholder="Create a password" required>
+                                    <button class="password-toggle" type="button" aria-label="Show password"
+                                        aria-controls="listenerPassword" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line class="eye-slash" x1="4" y1="4" x2="20" y2="20"></line>
+                                        </svg>
+                                    </button>
+                                    </div>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="listenerConfirmPassword">Confirm password</label>
-                                    <input id="listenerConfirmPassword" type="password"
-                                        placeholder="Confirm your password" required>
+                                    <div class="password-input-wrap">
+                                    <input id="listenerConfirmPassword" name="confirm_password" type="password"
+                                        minlength="8" autocomplete="new-password" placeholder="Confirm your password"
+                                        required>
+                                    <button class="password-toggle" type="button" aria-label="Show password"
+                                        aria-controls="listenerConfirmPassword" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line class="eye-slash" x1="4" y1="4" x2="20" y2="20"></line>
+                                        </svg>
+                                    </button>
+                                    </div>
+                                </div>
+
+                                <div class="field-group full-width">
+                                    <label for="listenerProfilePicture">Profile picture</label>
+                                    <input id="listenerProfilePicture" name="profile_picture" type="file"
+                                        accept="image/jpeg,image/png,image/gif,image/webp">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="stacked-card">
-                            <h3>Listening profile</h3>
-
-                            <div class="form-grid">
-                                <div class="field-group">
-                                    <label for="listenerGenre">Favorite genre</label>
-                                    <select id="listenerGenre">
-                                        <option>Pop</option>
-                                        <option>Hip-Hop</option>
-                                        <option>R&B</option>
-                                        <option>Rock</option>
-                                        <option>Electronic</option>
-                                        <option>Indie</option>
-                                    </select>
-                                </div>
-
-                                <div class="field-group">
-                                    <label for="listenerMood">Listening mood</label>
-                                    <input id="listenerMood" type="text" placeholder="Chill, upbeat, late-night...">
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -276,7 +285,9 @@
                     </div>
                 </form>
 
-                <form class="detail-form" data-form="artist">
+                <form class="detail-form" data-form="artist" action="../../Backend/php/register_process.php"
+                    method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="role" value="artist">
 
                     <div class="stacked-card-group">
 
@@ -286,23 +297,53 @@
                             <div class="form-grid">
                                 <div class="field-group">
                                     <label for="artistUsername">Username</label>
-                                    <input id="artistUsername" type="text" placeholder="Choose a username" required>
+                                    <input id="artistUsername" name="username" type="text" maxlength="100"
+                                        autocomplete="username" placeholder="Choose a username" required>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="artistEmail">Email address</label>
-                                    <input id="artistEmail" type="email" placeholder="artist@example.com" required>
+                                    <input id="artistEmail" name="email" type="email" maxlength="100"
+                                        autocomplete="email" placeholder="artist@example.com" required>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="artistPassword">Password</label>
-                                    <input id="artistPassword" type="password" placeholder="Create a password" required>
+                                    <div class="password-input-wrap">
+                                    <input id="artistPassword" name="password" type="password" minlength="8"
+                                        autocomplete="new-password" placeholder="Create a password" required>
+                                    <button class="password-toggle" type="button" aria-label="Show password"
+                                        aria-controls="artistPassword" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line class="eye-slash" x1="4" y1="4" x2="20" y2="20"></line>
+                                        </svg>
+                                    </button>
+                                    </div>
                                 </div>
 
                                 <div class="field-group">
                                     <label for="artistConfirmPassword">Confirm password</label>
-                                    <input id="artistConfirmPassword" type="password"
-                                        placeholder="Confirm your password" required>
+                                    <div class="password-input-wrap">
+                                    <input id="artistConfirmPassword" name="confirm_password" type="password"
+                                        minlength="8" autocomplete="new-password" placeholder="Confirm your password"
+                                        required>
+                                    <button class="password-toggle" type="button" aria-label="Show password"
+                                        aria-controls="artistConfirmPassword" aria-pressed="false">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line class="eye-slash" x1="4" y1="4" x2="20" y2="20"></line>
+                                        </svg>
+                                    </button>
+                                    </div>
+                                </div>
+
+                                <div class="field-group full-width">
+                                    <label for="artistProfilePicture">Profile picture</label>
+                                    <input id="artistProfilePicture" name="profile_picture" type="file"
+                                        accept="image/jpeg,image/png,image/gif,image/webp">
                                 </div>
                             </div>
                         </div>
@@ -313,25 +354,66 @@
                             <div class="form-grid">
                                 <div class="field-group">
                                     <label for="artistName">Artist name</label>
-                                    <input id="artistName" type="text" placeholder="Your stage name" required>
+                                    <input id="artistName" name="artist_name" type="text" maxlength="100"
+                                        placeholder="Your stage name" required>
                                 </div>
 
-                                <div class="field-group">
-                                    <label for="artistGenre">Primary genre</label>
-                                    <select id="artistGenre">
-                                        <option>Pop</option>
-                                        <option>Hip-Hop</option>
-                                        <option>R&B</option>
-                                        <option>Rock</option>
-                                        <option>Electronic</option>
-                                        <option>Alternative</option>
-                                    </select>
+                                <fieldset class="field-group full-width genre-picker">
+                                    <legend>Genres</legend>
+                                    <div class="genre-options">
+                                        <label><input type="checkbox" name="artistGenreOption" value="Pop">
+                                            <span>Pop</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Rock">
+                                            <span>Rock</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Hip-Hop">
+                                            <span>Hip-Hop</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Electronic">
+                                            <span>Electronic</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Classical">
+                                            <span>Classical</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Jazz">
+                                            <span>Jazz</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Blues">
+                                            <span>Blues</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Country">
+                                            <span>Country</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="R&amp;B">
+                                            <span>R&amp;B</span></label>
+                                        <label><input type="checkbox" name="artistGenreOption" value="Folk">
+                                            <span>Folk</span></label>
+                                    </div>
+                                    <input id="artistGenres" name="genre" type="hidden">
+                                </fieldset>
+
+                                <div class="field-group full-width">
+                                    <label for="artistLanguageSearch">Languages</label>
+                                    <div class="multi-picker" data-picker="languages">
+                                        <div class="selected-options" aria-live="polite"></div>
+                                        <input id="artistLanguageSearch" type="text" autocomplete="off"
+                                            aria-autocomplete="list" aria-controls="artistLanguageSuggestions"
+                                            aria-expanded="false" placeholder="Type to search languages">
+                                        <div id="artistLanguageSuggestions" class="picker-suggestions" role="listbox"
+                                            hidden></div>
+                                        <input id="artistLanguages" name="language" type="hidden">
+                                    </div>
                                 </div>
 
                                 <div class="field-group full-width">
                                     <label for="artistBio">Artist bio</label>
-                                    <textarea id="artistBio" rows="4"
+                                    <textarea id="artistBio" name="biography" maxlength="255" rows="4"
                                         placeholder="Tell listeners about your sound and story..."></textarea>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistYoutube">YouTube URL</label>
+                                    <input id="artistYoutube" name="youtube_url" type="url" maxlength="255"
+                                        placeholder="https://youtube.com/@yourchannel">
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="artistTiktok">TikTok URL</label>
+                                    <input id="artistTiktok" name="tiktok_url" type="url" maxlength="255"
+                                        placeholder="https://www.tiktok.com/@youraccount">
                                 </div>
                             </div>
                         </div>
@@ -355,7 +437,7 @@
                 <a href="login.html" class="login-link">Log in</a>
 
                 <div class="home-link-wrap">
-                    <a href="homepage.html" class="home-link">Return to homepage</a>
+                    <a href="listener/listener_homepage.html" class="home-link">Return to homepage</a>
                 </div>
             </div>
 
@@ -388,6 +470,188 @@
         const detailsTitle = document.getElementById("detailsTitle");
         const detailsSubtitle = document.getElementById("detailsSubtitle");
         const detailForms = document.querySelectorAll(".detail-form");
+        const languageCodes = "aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io is it iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu".split(" ");
+        const displayLanguageName = new Intl.DisplayNames(["en"], { type: "language" });
+        const languageNames = [...new Set(languageCodes.map(function (code) {
+            return code === "tw" ? "Twi" : displayLanguageName.of(code);
+        }))].filter(Boolean).sort();
+        function initializeMultiPicker(picker, getOptions) {
+            const searchInput = picker.querySelector("input[type='text']");
+            const valueInput = picker.querySelector("input[type='hidden']");
+            const selectedOptions = picker.querySelector(".selected-options");
+            const suggestions = picker.querySelector(".picker-suggestions");
+            const selectedValues = [];
+            let visibleOptions = [];
+            let activeIndex = -1;
+
+            function renderSelection() {
+                selectedOptions.replaceChildren();
+                selectedValues.forEach(function (value, index) {
+                    if (index > 0) {
+                        selectedOptions.appendChild(document.createTextNode(", "));
+                    }
+
+                    const selectedOption = document.createElement("span");
+                    selectedOption.className = "selected-option";
+                    selectedOption.appendChild(document.createTextNode(value));
+
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.className = "remove-option";
+                    removeButton.setAttribute("aria-label", "Remove " + value);
+                    removeButton.textContent = "×";
+                    removeButton.addEventListener("click", function () {
+                        selectedValues.splice(index, 1);
+                        renderSelection();
+                    });
+
+                    selectedOption.appendChild(removeButton);
+                    selectedOptions.appendChild(selectedOption);
+                });
+
+                valueInput.value = selectedValues.join(", ");
+            }
+
+            function closeSuggestions() {
+                suggestions.replaceChildren();
+                suggestions.hidden = true;
+                searchInput.setAttribute("aria-expanded", "false");
+                activeIndex = -1;
+            }
+
+            function selectOption(value) {
+                if (!selectedValues.some(function (selected) {
+                    return selected.toLocaleLowerCase() === value.toLocaleLowerCase();
+                })) {
+                    selectedValues.push(value);
+                    renderSelection();
+                }
+                searchInput.value = "";
+                closeSuggestions();
+            }
+
+            searchInput.addEventListener("input", function () {
+                const query = searchInput.value.trim().toLocaleLowerCase();
+                const options = getOptions();
+                const exactMatch = options.find(function (option) {
+                    return option.toLocaleLowerCase() === query;
+                });
+
+                if (query.length > 2 && exactMatch) {
+                    selectOption(exactMatch);
+                    return;
+                }
+
+                visibleOptions = options.filter(function (option) {
+                    return option.toLocaleLowerCase().startsWith(query) &&
+                        !selectedValues.some(function (selected) {
+                            return selected.toLocaleLowerCase() === option.toLocaleLowerCase();
+                        });
+                }).slice(0, 10);
+                activeIndex = -1;
+                suggestions.replaceChildren();
+
+                if (!query || visibleOptions.length === 0) {
+                    closeSuggestions();
+                    return;
+                }
+
+                visibleOptions.forEach(function (option, index) {
+                    const suggestion = document.createElement("button");
+                    suggestion.type = "button";
+                    suggestion.className = "picker-suggestion";
+                    suggestion.id = suggestions.id + "-" + index;
+                    suggestion.setAttribute("role", "option");
+                    suggestion.setAttribute("aria-selected", "false");
+                    suggestion.textContent = option;
+                    suggestion.addEventListener("pointerdown", function (event) {
+                        event.preventDefault();
+                    });
+                    suggestion.addEventListener("click", function () {
+                        selectOption(option);
+                    });
+                    suggestions.appendChild(suggestion);
+                });
+
+                suggestions.hidden = false;
+                searchInput.setAttribute("aria-expanded", "true");
+            });
+
+            searchInput.addEventListener("keydown", function (event) {
+                if (event.key === "ArrowDown" && visibleOptions.length > 0) {
+                    event.preventDefault();
+                    activeIndex = (activeIndex + 1) % visibleOptions.length;
+                    updateActiveSuggestion();
+                } else if (event.key === "ArrowUp" && visibleOptions.length > 0) {
+                    event.preventDefault();
+                    activeIndex = activeIndex <= 0 ? visibleOptions.length - 1 : activeIndex - 1;
+                    updateActiveSuggestion();
+                } else if (event.key === "Enter") {
+                    event.preventDefault();
+                    const typedValue = searchInput.value.trim();
+                    const exactMatch = getOptions().find(function (option) {
+                        return option.toLocaleLowerCase() === typedValue.toLocaleLowerCase();
+                    });
+                    const selectedValue = activeIndex >= 0
+                        ? visibleOptions[activeIndex]
+                        : exactMatch;
+
+                    if (selectedValue) {
+                        selectOption(selectedValue);
+                    }
+                } else if (event.key === "Escape") {
+                    closeSuggestions();
+                }
+            });
+
+            function updateActiveSuggestion() {
+                Array.from(suggestions.children).forEach(function (suggestion, index) {
+                    const isActive = index === activeIndex;
+                    suggestion.setAttribute("aria-selected", String(isActive));
+                    if (isActive) {
+                        searchInput.setAttribute("aria-activedescendant", suggestion.id);
+                    }
+                });
+            }
+
+            searchInput.addEventListener("blur", function () {
+                window.setTimeout(closeSuggestions, 150);
+            });
+        }
+
+        document.querySelectorAll(".multi-picker[data-picker='languages']").forEach(function (picker) {
+            initializeMultiPicker(picker, function () {
+                return languageNames;
+            });
+        });
+
+        function updateGenreSelection(form, checkboxName, hiddenInputId) {
+            const genres = Array.from(form.querySelectorAll("input[name='" + checkboxName + "']:checked"),
+                function (selected) {
+                    return selected.value;
+                });
+            document.getElementById(hiddenInputId).value = genres.join(", ");
+        }
+
+        document.querySelectorAll("input[name='artistGenreOption']").forEach(function (checkbox) {
+            checkbox.addEventListener("change", function () {
+                updateGenreSelection(
+                    checkbox.form,
+                    "artistGenreOption",
+                    "artistGenres"
+                );
+            });
+        });
+
+        document.querySelectorAll(".password-toggle").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const passwordInput = button.closest(".password-input-wrap").querySelector("input");
+                const isVisible = passwordInput.type === "text";
+                passwordInput.type = isVisible ? "password" : "text";
+                button.setAttribute("aria-pressed", String(!isVisible));
+                button.setAttribute("aria-label", isVisible ? "Show password" : "Hide password");
+            });
+        });
 
         function selectAccount(card) {
 
@@ -428,14 +692,41 @@
             });
         }
 
-        document.querySelector("form[data-form='listener']").addEventListener("submit", function (event) {
-            event.preventDefault();
-            alert("Listener account submitted");
-        });
+        document.querySelectorAll("form[data-form]").forEach(function (form) {
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
 
-        document.querySelector("form[data-form='artist']").addEventListener("submit", function (event) {
-            event.preventDefault();
-            alert("Artist account submitted");
+                if (form.dataset.form === "artist" &&
+                    !form.querySelector("input[name='artistGenreOption']:checked")) {
+                    alert("Choose at least one artist genre.");
+                    return;
+                }
+
+                const submitButton = form.querySelector("button[type='submit']");
+                submitButton.disabled = true;
+                submitButton.textContent = "Creating account...";
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        body: new FormData(form)
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Account registration failed.");
+                    }
+
+                    alert(result.message);
+                    window.location.href = "login.html";
+                } catch (error) {
+                    alert(error.message || "Could not connect to the registration service. Please try again.");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = form.dataset.form === "artist"
+                        ? "Create profile"
+                        : "Create account";
+                }
+            });
         });
 
     </script>

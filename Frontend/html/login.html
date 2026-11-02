@@ -12,10 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20260821">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/auth.css?v=20261102-password-eye">
     <style>
-        /* layout tweaks for simplified login */
-        /* card sizing: set to requested 520px max width */
         .register-card {
             max-width: 520px;
             margin: 1rem auto;
@@ -32,15 +30,17 @@
             box-sizing: border-box;
         }
 
+        .login-simple .password-input-wrap input {
+            padding-right: 48px;
+        }
+
         .button-row {
             display: flex;
             gap: 0.75rem;
             align-items: center;
         }
 
-        /* create-account styled as a subtle button without underline */
         .ghost-button {
-            /* match submit-button visual style */
             background: linear-gradient(135deg, #f472b6, #db2777);
             color: white;
             box-shadow: 0 8px 18px rgba(219, 39, 119, 0.25);
@@ -58,7 +58,6 @@
             box-shadow: 0 12px 25px rgba(219, 39, 119, 0.32);
         }
 
-        /* place login button on the right side */
         .login-simple .form-actions {
             justify-content: flex-end;
         }
@@ -71,66 +70,71 @@
 </head>
 
 <body>
-
     <div class="page">
-
         <div class="logo" aria-label="MelodyMatch home">
             <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
             <div class="logo-text">Melody<span>Match</span></div>
         </div>
 
         <div class="register-card">
-
             <div class="title-section">
                 <h1>Welcome back</h1>
                 <p>Log in and pick up where your sound left off.</p>
             </div>
 
-            <!-- Simplified login: only two vertical textboxes -->
-            <form id="loginForm" class="detail-form active login-simple" action="homepage.html" method="get">
-
+            <form id="loginForm" class="detail-form active login-simple" action="listener/listener_homepage.html" method="get">
                 <div class="field-group">
                     <label for="loginEmail">Email address</label>
-                    <input id="loginEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email"
-                        required>
+                    <input id="loginEmail" name="email" type="email" placeholder="you@example.com"
+                        autocomplete="email" required>
                 </div>
 
                 <div class="field-group">
                     <label for="loginPassword">Password</label>
-                    <input id="loginPassword" name="password" type="password" placeholder="Enter your password"
-                        autocomplete="current-password" required>
+                    <div class="password-input-wrap">
+                        <input id="loginPassword" name="password" type="password" placeholder="Enter your password"
+                            autocomplete="current-password" required>
+                        <button class="password-toggle" type="button" aria-label="Show password"
+                            aria-controls="loginPassword" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <line class="eye-slash" x1="4" y1="4" x2="20" y2="20"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-actions button-row">
                     <button type="submit" class="submit-button">Log in</button>
                 </div>
-
             </form>
 
             <div class="login-section" style="margin-top:18px; text-align:center;">
-
                 <span>Don't have an account?</span>
                 <a href="register.html" class="login-link">Create an account</a>
 
                 <div class="home-link-wrap">
-                    <a href="homepage.html" class="home-link">Return to homepage</a>
+                    <a href="listener/listener_homepage.html" class="home-link">Return to homepage</a>
                 </div>
-
             </div>
-
         </div>
 
         <div class="footer">© 2026 MelodyMatch · Made for music lovers</div>
-
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            // placeholder authentication flow
-            // allow the form to submit normally to homepage.html (method=get)
+        document.querySelectorAll(".password-toggle").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const passwordInput = button.closest(".password-input-wrap").querySelector("input");
+                const isVisible = passwordInput.type === "text";
+                passwordInput.type = isVisible ? "password" : "text";
+                button.setAttribute("aria-pressed", String(!isVisible));
+                button.setAttribute("aria-label", isVisible ? "Show password" : "Hide password");
+            });
         });
-    </script>
 
+    </script>
 </body>
 
 </html>
