@@ -66,6 +66,13 @@
             width: auto;
             max-width: none;
         }
+
+        .login-error {
+            margin: 14px 0 0;
+            color: #b4234b;
+            font-size: 13px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -82,7 +89,7 @@
                 <p>Log in and pick up where your sound left off.</p>
             </div>
 
-            <form id="loginForm" class="detail-form active login-simple" action="listener/listener_homepage.html" method="get">
+            <form id="loginForm" class="detail-form active login-simple" action="../../Backend/php/login_process.php" method="post">
                 <div class="field-group">
                     <label for="loginEmail">Email address</label>
                     <input id="loginEmail" name="email" type="email" placeholder="you@example.com"
@@ -109,6 +116,7 @@
                     <button type="submit" class="submit-button">Log in</button>
                 </div>
             </form>
+            <p id="loginError" class="login-error" role="alert" hidden></p>
 
             <div class="login-section" style="margin-top:18px; text-align:center;">
                 <span>Don't have an account?</span>
@@ -134,6 +142,18 @@
             });
         });
 
+        const loginMessages = {
+            invalid: "Email or password is incorrect.",
+            inactive: "This account is not active. Please contact support.",
+            unsupported: "This account type does not have a login page yet.",
+            unavailable: "Login is temporarily unavailable. Please try again."
+        };
+        const loginError = document.getElementById("loginError");
+        const errorCode = new URLSearchParams(window.location.search).get("error");
+        if (errorCode && loginMessages[errorCode]) {
+            loginError.textContent = loginMessages[errorCode];
+            loginError.hidden = false;
+        }
     </script>
 </body>
 

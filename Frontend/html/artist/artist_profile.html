@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Profile | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/artist-profile.css?v=20261103-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Artist navigation">
+                <a href="artist_homepage.html">✦ Artist studio</a>
+                <a class="active" href="artist_profile.html" aria-current="page">♫ Artist profile</a>
+                <a href="release_song.html">＋ Release new song</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>Artist account
+            </div>
+            <div class="auth-actions">
+                <a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a>
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb"><a href="artist_homepage.html">Artist studio</a>
+                    <span aria-hidden="true">/</span> Profile</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
+                    Dark</button>
+                <a class="profile-pill" href="artist_profile.html" aria-label="Artist profile picture">
+                    <span id="profileInitial" aria-hidden="true">A</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">YOUR CREATOR SPACE</p>
+                    <h1>Artist profile</h1>
+                    <p>Manage your artist identity and see how listeners can discover your music.</p>
+                </div>
+                <span class="account-badge"><span aria-hidden="true">●</span> Artist</span>
+            </section>
+
+            <section class="profile-overview" aria-labelledby="artistDisplayName">
+                <div class="profile-avatar">
+                    <img id="artistHeroPicture" alt="" hidden>
+                    <span id="artistHeroInitial">A</span>
+                </div>
+                <div class="profile-identity">
+                    <p class="profile-kicker">ARTIST INFORMATION</p>
+                    <h2 id="artistDisplayName">Loading profile…</h2>
+                    <p class="profile-username" id="artistHandle">@artist</p>
+                    <p class="artist-biography" id="artistBiography">Loading your biography…</p>
+                </div>
+                <a class="button primary profile-action" id="publicProfileButton"
+                    href="artist_public_profile.html">View Public Artist Profile <span aria-hidden="true">→</span></a>
+            </section>
+
+            <div class="profile-grid">
+                <section class="profile-card" aria-labelledby="personalHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">ACCOUNT DETAILS</p><h2 id="personalHeading">Personal information</h2>
+                        </div>
+                        <span class="section-icon" aria-hidden="true">♡</span>
+                    </div>
+                    <dl class="detail-list">
+                        <div><dt>Username</dt><dd id="artistUsername">Loading…</dd></div>
+                        <div><dt>Email</dt><dd id="artistEmail">Loading…</dd></div>
+                        <div><dt>Joined</dt><dd id="artistJoined">Loading…</dd></div>
+                    </dl>
+                </section>
+
+                <section class="profile-card" aria-labelledby="musicDetailsHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">YOUR SOUND</p><h2 id="musicDetailsHeading">Music details</h2></div>
+                        <span class="section-icon" aria-hidden="true">♫</span>
+                    </div>
+                    <dl class="detail-list">
+                        <div><dt>Primary genre</dt><dd id="artistGenre">Loading…</dd></div>
+                        <div><dt>Music language</dt><dd id="artistLanguage">Loading…</dd></div>
+                    </dl>
+                    <p class="card-footnote">These details help listeners find your music.</p>
+                </section>
+
+                <section class="profile-card" aria-labelledby="socialHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">FIND YOU ELSEWHERE</p><h2 id="socialHeading">Social links</h2></div>
+                        <span class="section-icon" aria-hidden="true">↗</span>
+                    </div>
+                    <dl class="detail-list">
+                        <div><dt>YouTube</dt><dd id="youtubeLink">Not provided</dd></div>
+                        <div><dt>TikTok</dt><dd id="tiktokLink">Not provided</dd></div>
+                    </dl>
+                </section>
+
+                <section class="profile-card" aria-labelledby="activityHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">YOUR REACH</p><h2 id="activityHeading">Music activity</h2></div>
+                        <span class="section-icon" aria-hidden="true">✦</span>
+                    </div>
+                    <div class="activity-stats artist-activity-stats">
+                        <article class="activity-stat"><span class="stat-icon" aria-hidden="true">♫</span>
+                            <div><strong id="songCount">0</strong><span>Songs</span></div>
+                        </article>
+                        <article class="activity-stat"><span class="stat-icon" aria-hidden="true">◉</span>
+                            <div><strong id="viewCount">0</strong><span>Views</span></div>
+                        </article>
+                        <article class="activity-stat"><span class="stat-icon" aria-hidden="true">♡</span>
+                            <div><strong id="likeCount">0</strong><span>Likes</span></div>
+                        </article>
+                        <article class="activity-stat"><span class="stat-icon" aria-hidden="true">⌑</span>
+                            <div><strong id="saveCount">0</strong><span>Saves</span></div>
+                        </article>
+                    </div>
+                    <a class="profile-breadcrumb artist-release-link" href="release_song.html">＋ Release a new song</a>
+                </section>
+
+                <section class="profile-card" id="account-settings" aria-labelledby="settingsHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">ACCOUNT</p><h2 id="settingsHeading">Account settings</h2></div>
+                        <span class="section-icon" aria-hidden="true">⚙</span>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Edit profile</strong><p>Update your artist details and social links.</p></div>
+                        <a class="setting-status" href="#editArtistProfile" data-open-settings="editArtistProfile">Edit profile</a>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Change password</strong><p>Keep your account credentials up to date.</p></div>
+                        <a class="setting-status" href="#changeArtistPassword" data-open-settings="changeArtistPassword">Change password</a>
+                    </div>
+                    <details class="settings-form" id="editArtistProfile">
+                        <summary>Edit artist profile</summary>
+                        <form id="artistProfileForm" enctype="multipart/form-data">
+                            <input type="hidden" name="action" value="profile">
+                            <label for="editArtistName">Artist name</label>
+                            <input id="editArtistName" name="artist_name" maxlength="100" required>
+                            <label for="editGenre">Primary genre</label>
+                            <input id="editGenre" name="genre" maxlength="255" placeholder="e.g. Pop, Jazz" required>
+                            <label for="editLanguage">Music language</label>
+                            <input id="editLanguage" name="language" maxlength="50" required>
+                            <label for="editBiography">Biography</label>
+                            <textarea id="editBiography" name="biography" maxlength="255" rows="4"></textarea>
+                            <label for="editYoutube">YouTube URL</label>
+                            <input id="editYoutube" name="youtube_url" type="url" maxlength="255">
+                            <label for="editTiktok">TikTok URL</label>
+                            <input id="editTiktok" name="tiktok_url" type="url" maxlength="255">
+                            <label for="editPicture">Profile picture</label>
+                            <input id="editPicture" name="profile_picture" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+                            <input type="hidden" name="csrf_token" id="profileCsrfToken">
+                            <button class="button primary" type="submit">Save profile</button>
+                        </form>
+                    </details>
+                    <details class="settings-form" id="changeArtistPassword">
+                        <summary>Change password</summary>
+                        <form id="artistPasswordForm">
+                            <input type="hidden" name="action" value="password">
+                            <label for="currentPassword">Current password</label>
+                            <input id="currentPassword" name="current_password" type="password" autocomplete="current-password" required>
+                            <label for="newPassword">New password</label>
+                            <input id="newPassword" name="new_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required>
+                            <label for="confirmNewPassword">Confirm new password</label>
+                            <input id="confirmNewPassword" name="confirm_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required>
+                            <input type="hidden" name="csrf_token" id="passwordCsrfToken">
+                            <button class="button primary" type="submit">Update password</button>
+                        </form>
+                    </details>
+                    <p class="settings-message" id="settingsMessage" role="status" aria-live="polite"></p>
+                    <div class="security-status artist-account-status">
+                        <span class="status-indicator" aria-hidden="true"></span>
+                        <div><strong id="artistStatus">Loading account…</strong><p>Artist account status</p></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        function setSocialLink(elementId, value) {
+            const container = document.getElementById(elementId);
+            if (!value) return;
+            try {
+                const url = new URL(value);
+                if (!['http:', 'https:'].includes(url.protocol)) return;
+                const link = document.createElement('a');
+                link.href = url.href;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = url.hostname.replace(/^www\./, '');
+                container.replaceChildren(link);
+            } catch (error) {
+                console.error('Could not display artist social link.', error);
+            }
+        }
+
+        let csrfToken = '';
+        const settingsMessage = document.getElementById('settingsMessage');
+        const profileForm = document.getElementById('artistProfileForm');
+        const passwordForm = document.getElementById('artistPasswordForm');
+
+        document.querySelectorAll('[data-open-settings]').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById(link.dataset.openSettings).open = true;
+            });
+        });
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            if (!response.ok) throw new Error('Could not load the artist profile.');
+            return response.json();
+        }).then(data => {
+            if (!data) return;
+            if (!data.success || !data.profile || data.profile.role !== 'Artist') {
+                throw new Error(data.message || 'An artist account is required to view this profile.');
+            }
+
+            const profile = data.profile;
+            csrfToken = profile.csrfToken || '';
+            document.getElementById('profileCsrfToken').value = csrfToken;
+            document.getElementById('passwordCsrfToken').value = csrfToken;
+            const initial = Array.from(profile.artistName || profile.username)[0] || 'A';
+            const profilePicture = document.getElementById('profilePicture');
+            const heroPicture = document.getElementById('artistHeroPicture');
+            document.getElementById('profileInitial').textContent = initial;
+            document.getElementById('artistHeroInitial').textContent = initial;
+            document.getElementById('artistDisplayName').textContent = profile.artistName || profile.username;
+            document.getElementById('artistHandle').textContent = `@${profile.username}`;
+            document.getElementById('artistBiography').textContent = profile.biography || 'Add a biography to introduce your music to listeners.';
+            document.getElementById('artistUsername').textContent = `@${profile.username}`;
+            document.getElementById('artistEmail').textContent = profile.email;
+            document.getElementById('artistJoined').textContent = profile.joined
+                ? new Date(`${profile.joined}T00:00:00`).toLocaleDateString(undefined, {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                })
+                : 'Not available';
+            document.getElementById('artistGenre').textContent = profile.genre || 'Not provided';
+            document.getElementById('artistLanguage').textContent = profile.language || 'Not provided';
+            document.getElementById('artistStatus').textContent = `${profile.status} account`;
+            document.getElementById('publicProfileButton').href =
+                `artist_public_profile.html?artist_id=${encodeURIComponent(profile.id)}`;
+            profileForm.elements.artist_name.value = profile.artistName || '';
+            profileForm.elements.genre.value = profile.genre || '';
+            profileForm.elements.language.value = profile.language || '';
+            profileForm.elements.biography.value = profile.biography || '';
+            profileForm.elements.youtube_url.value = profile.youtubeUrl || '';
+            profileForm.elements.tiktok_url.value = profile.tiktokUrl || '';
+
+            if (profile.profilePicture) {
+                [profilePicture, heroPicture].forEach(image => {
+                    image.src = profile.profilePicture;
+                    image.alt = `${profile.artistName || profile.username} profile picture`;
+                    image.hidden = false;
+                });
+                document.getElementById('profileInitial').hidden = true;
+                document.getElementById('artistHeroInitial').hidden = true;
+            }
+
+            setSocialLink('youtubeLink', profile.youtubeUrl);
+            setSocialLink('tiktokLink', profile.tiktokUrl);
+
+            const activity = profile.musicActivity || {};
+            document.getElementById('songCount').textContent = activity.songs ?? 0;
+            document.getElementById('viewCount').textContent = activity.views ?? 0;
+            document.getElementById('likeCount').textContent = activity.likes ?? 0;
+            document.getElementById('saveCount').textContent = activity.saves ?? 0;
+        }).catch(error => {
+            console.error('Could not load artist profile.', error);
+            document.getElementById('artistDisplayName').textContent = 'Profile unavailable';
+            document.getElementById('artistBiography').textContent = 'Your artist profile could not be loaded.';
+        });
+
+        async function submitSettingsForm(form) {
+            settingsMessage.textContent = '';
+            if (!csrfToken) throw new Error('Your session token is missing. Please reload the page.');
+            const body = new FormData(form);
+            const response = await fetch('/MelodyMatch/Backend/php/update_artist_account.php', {
+                method: 'POST',
+                body,
+                headers: { Accept: 'application/json' }
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Your account could not be updated.');
+            }
+            settingsMessage.textContent = result.message;
+            if (form === profileForm) {
+                window.MelodyMatchNavigation.navigate(new URL(window.location.href), false);
+            }
+            else form.reset();
+        }
+
+        [profileForm, passwordForm].forEach(form => {
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                submitSettingsForm(form).catch(error => {
+                    settingsMessage.textContent = error.message;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

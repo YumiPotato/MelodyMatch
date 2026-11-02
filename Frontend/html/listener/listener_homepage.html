@@ -19,20 +19,17 @@
             </div>
             <nav><a href="#discover">✦ Discover</a><a href="#playlists">♪ Playlists</a><a href="#artists">☾
                     Artists</a><a href="#library">♡ Library</a></nav>
-            <div class="auth-actions"><a class="nav-btn" href="../login.html">Login</a><a class="nav-btn alt"
-                    href="../register.html">Register</a></div>
+            <div class="auth-actions"><a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a></div>
         </aside>
         <main class="main-content">
             <header class="topbar">
                 <div class="search-box"><span>🔎</span><input type="text"
                         placeholder="Search songs, artists, playlists..."></div><button class="theme-toggle"
                     type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
-                <a class="profile-pill" href="listener_profile.html" aria-label="View listener profile"><svg width="18" height="18" viewBox="0 0 24 24"
-                        fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path
-                            d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2c0-2.761 2.239-5 5-5s5 2.239 5 5h2c0-3.866-3.134-7-7-7z"
-                            fill="#FFFFFF" />
-                    </svg></a>
+                <a class="profile-pill" id="profileLink" href="listener_profile.html" aria-label="View listener profile">
+                    <span id="profileInitial" aria-hidden="true">L</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
             </header>
             <section class="hero-card" id="discover">
                 <div>
@@ -40,6 +37,14 @@
                     <h1>Feel the vibe with soft pink playlists and chill discoveries.</h1>
                     <p>Browse featured playlists, explore artists and find your next favorite sound.</p>
                 </div><a class="button primary" href="#playlists">Explore playlists</a>
+            </section>
+            <section class="section release-feed" aria-labelledby="latestReleasesHeading">
+                <div class="section-title">
+                    <h3 id="latestReleasesHeading">Latest releases</h3>
+                </div>
+                <div class="release-list" id="homepageSongs" aria-live="polite">
+                    <p class="release-empty">Loading released songs…</p>
+                </div>
             </section>
             <section class="section">
                 <div class="section-title">
@@ -162,11 +167,19 @@
             </form>
         </div>
     </div>
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
     <script>
         const modal = document.getElementById('preferenceModal');
         const themeToggle = document.getElementById('themeToggle');
+        const profilePicture = document.getElementById('profilePicture');
+        const profileInitial = document.getElementById('profileInitial');
+        const songsContainer = document.getElementById('homepageSongs');
+        let saveCsrfToken = '';
+        let homepageSongs = [];
         const savedTheme = localStorage.getItem('melodyMatchTheme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let preferenceHistoryKey = null;
         function applyTheme(theme) {
             document.documentElement.dataset.theme = theme;
             if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
@@ -176,8 +189,161 @@
 
         function closeModal() { modal.hidden = true; document.body.classList.remove('modal-open'); }
 
-        modal.hidden = false;
-        document.body.classList.add('modal-open');
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            if (!response.ok) {
+                throw new Error('Could not load the listener account.');
+            }
+            return response.json();
+        }).then(data => {
+            if (!data) return;
+            if (!data.success || !data.profile) {
+                throw new Error(data.message || 'Could not load the listener account.');
+            }
+
+            const profile = data.profile;
+            saveCsrfToken = profile.csrfToken || '';
+            preferenceHistoryKey = `melodyMatchPreferenceHistory:${profile.id}`;
+            profileInitial.textContent = Array.from(profile.username)[0] || 'L';
+            if (profile.profilePicture) {
+                profilePicture.src = profile.profilePicture;
+                profilePicture.alt = `${profile.username} profile picture`;
+                profilePicture.hidden = false;
+                profileInitial.hidden = true;
+            }
+
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+        }).catch(error => {
+            console.error('Could not load listener account.', error);
+            document.getElementById('preferenceError').textContent =
+                'Your account could not be loaded. Please refresh the page or sign in again.';
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+        });
+
+        function createSongRow(song) {
+            const row = document.createElement('article');
+            row.className = 'release-row';
+
+            const cover = document.createElement('div');
+            cover.className = 'release-cover';
+            if (song.coverUrl) {
+                const image = document.createElement('img');
+                image.src = song.coverUrl;
+                image.alt = '';
+                cover.append(image);
+            } else {
+                cover.textContent = '♫';
+                cover.setAttribute('aria-hidden', 'true');
+            }
+
+            const details = document.createElement('div');
+            details.className = 'release-details';
+            const title = document.createElement('h4');
+            title.textContent = song.title;
+            const artist = document.createElement('p');
+            artist.className = 'release-artist';
+            artist.textContent = `${song.artistName} · ${song.genre}`;
+            const metadata = document.createElement('p');
+            metadata.className = 'release-metadata';
+            metadata.textContent = [
+                new Date(`${song.releaseDate}T00:00:00`).getFullYear(),
+                song.language,
+                song.mood
+            ].filter(Boolean).join(' · ');
+            const actions = document.createElement('div');
+            actions.className = 'release-actions';
+            const playButton = document.createElement('button');
+            playButton.type = 'button';
+            playButton.className = 'release-play';
+            playButton.textContent = '▶ Play';
+            playButton.setAttribute('aria-label', `Play ${song.title} by ${song.artistName}`);
+            playButton.addEventListener('click', () => {
+                window.openMelodyMatchPlayer(homepageSongs, song.id, saveCsrfToken);
+            });
+            const saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'release-save';
+            saveButton.setAttribute('aria-pressed', String(song.saved));
+            saveButton.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+            saveButton.addEventListener('click', () => toggleSave(song, saveButton));
+            actions.append(playButton, saveButton);
+            details.append(title, artist, metadata, actions);
+            row.append(cover, details);
+            return row;
+        }
+
+        async function toggleSave(song, button) {
+            if (!saveCsrfToken) {
+                button.textContent = 'Sign in again to save';
+                return;
+            }
+            button.disabled = true;
+            try {
+                const response = await fetch('/MelodyMatch/Backend/php/save_song.php', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ song_id: String(song.id), csrf_token: saveCsrfToken })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'This song could not be saved.');
+                }
+                song.saved = result.saved;
+                song.saves = result.saves;
+                button.setAttribute('aria-pressed', String(song.saved));
+                button.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+            } catch (error) {
+                console.error('Could not save released song.', error);
+                button.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        fetch('/MelodyMatch/Backend/php/get_homepage_songs.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Could not load released songs.');
+            }
+            saveCsrfToken = result.csrfToken || saveCsrfToken;
+            return result.songs;
+        }).then(songs => {
+            if (!songs) return;
+            homepageSongs = songs;
+            songsContainer.replaceChildren();
+            if (songs.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'release-empty';
+                empty.textContent = 'New artist releases will appear here.';
+                songsContainer.append(empty);
+                return;
+            }
+            songs.forEach(song => songsContainer.append(createSongRow(song)));
+        }).catch(error => {
+            console.error('Could not load homepage releases.', error);
+            songsContainer.innerHTML = '';
+            const message = document.createElement('p');
+            message.className = 'release-empty';
+            message.textContent = 'Released songs could not be loaded. Please refresh the page.';
+            songsContainer.append(message);
+        });
+
 
         if (themeToggle) themeToggle.addEventListener('click', () => {
             const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -216,10 +382,15 @@
                 String(today.getMonth() + 1).padStart(2, '0'),
                 String(today.getDate()).padStart(2, '0')
             ].join('-');
-            const historyKey = 'melodyMatchPreferenceHistory';
+            if (!preferenceHistoryKey) {
+                document.getElementById('preferenceError').textContent =
+                    'Your account is still loading. Please try again.';
+                return;
+            }
+
             let history;
             try {
-                history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                history = JSON.parse(localStorage.getItem(preferenceHistoryKey) || '[]');
                 if (!Array.isArray(history)) {
                     throw new TypeError('Preference history must be a list.');
                 }
@@ -241,7 +412,7 @@
             ].slice(0, 7);
             localStorage.setItem('melodyMatchGenres', JSON.stringify(dailyPreferences.genres));
             localStorage.setItem('melodyMatchMood', JSON.stringify(dailyPreferences.moods));
-            localStorage.setItem(historyKey, JSON.stringify(updatedHistory));
+            localStorage.setItem(preferenceHistoryKey, JSON.stringify(updatedHistory));
             closeModal();
         });
     </script>

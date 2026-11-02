@@ -1,0 +1,230 @@
+.artist-biography {
+    margin: 9px 0 0;
+    color: var(--muted);
+    white-space: pre-line;
+}
+
+.artist-release-link {
+    display: inline-flex;
+    margin-top: 16px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.artist-activity-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.artist-activity-stats .activity-stat {
+    gap: 8px;
+    padding: 14px 10px;
+}
+
+.artist-activity-stats .activity-stat strong {
+    font-size: 18px;
+}
+
+.artist-activity-stats .activity-stat div span {
+    font-size: 10px;
+}
+
+.artist-account-status {
+    margin-top: 14px;
+}
+
+.setting-status[href] {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.settings-form {
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+}
+
+.settings-form summary {
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.settings-form form {
+    display: grid;
+    gap: 9px;
+    margin-top: 14px;
+}
+
+.settings-form label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.settings-form input,
+.settings-form textarea,
+.settings-form select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--card);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+}
+
+.settings-form input:focus,
+.settings-form textarea:focus,
+.settings-form summary:focus-visible,
+.setting-status[href]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.settings-form input[type="hidden"] {
+    display: none;
+}
+
+.settings-form .button {
+    justify-self: start;
+    margin-top: 5px;
+}
+
+.settings-message {
+    color: var(--primary);
+    font-size: 13px;
+}
+
+.public-artist-overview {
+    align-items: flex-start;
+}
+
+.public-artist-overview .profile-identity {
+    padding-top: 5px;
+}
+
+.public-artist-overview h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.2;
+}
+
+.public-social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 15px;
+}
+
+.public-social-links a {
+    padding: 6px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--primary-hover);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.public-social-links a:hover {
+    border-color: var(--primary);
+}
+
+.public-releases {
+    margin-top: 28px;
+}
+
+.public-release-count {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.public-song-list {
+    display: grid;
+    gap: 14px;
+}
+
+.public-song-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: 0 8px 24px var(--shadow);
+}
+
+.public-song-cover {
+    display: grid;
+    flex: 0 0 auto;
+    width: 104px;
+    height: 104px;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f472b6, #db2777);
+    color: #fff;
+    font-size: 34px;
+    object-fit: cover;
+}
+
+.public-song-cover-placeholder {
+    display: grid;
+}
+
+.public-song-details {
+    min-width: 0;
+    flex: 1;
+}
+
+.public-song-details h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.public-song-details > p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.public-song-details .public-song-description {
+    margin-top: 10px;
+    font-size: 13px;
+    white-space: pre-line;
+}
+
+.public-song-details audio {
+    display: block;
+    width: min(100%, 520px);
+    height: 42px;
+    margin-top: 13px;
+}
+
+@media (max-width: 900px) {
+    .artist-activity-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .artist-activity-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .public-song-card {
+        flex-direction: column;
+    }
+
+    .public-song-cover {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+}

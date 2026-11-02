@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Studio | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Artist navigation">
+                <a class="active" href="artist_homepage.html" aria-current="page">✦ Artist studio</a>
+                <a href="artist_profile.html">♫ Your profile</a>
+                <a href="release_song.html">＋ Release new song</a>
+            </nav>
+            <div class="profile-sidebar-note">
+                <span class="profile-status-dot" aria-hidden="true"></span>
+                Artist account
+            </div>
+            <div class="auth-actions">
+                <a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a>
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb">MelodyMatch <span aria-hidden="true">/</span> Artist studio</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
+                    Dark</button>
+                <a class="profile-pill" id="profileLink" href="artist_profile.html" aria-label="View artist profile">
+                    <span id="profileInitial" aria-hidden="true">A</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">WELCOME TO YOUR STUDIO</p>
+                    <h1 id="artistGreeting">Artist studio</h1>
+                    <p>Your MelodyMatch artist account is ready.</p>
+                </div>
+                <span class="account-badge"><span aria-hidden="true">●</span> Artist</span>
+            </section>
+
+            <section class="section release-feed" aria-labelledby="latestReleasesHeading">
+                <div class="section-title">
+                    <h3 id="latestReleasesHeading">Latest releases</h3>
+                </div>
+                <div class="release-list" id="homepageSongs" aria-live="polite">
+                    <p class="release-empty">Loading released songs…</p>
+                </div>
+            </section>
+
+            <section class="profile-card" id="artist-profile" aria-labelledby="artistProfileHeading">
+                <div class="profile-card-heading">
+                    <div>
+                        <p class="profile-kicker">YOUR NEXT RELEASE</p>
+                        <h2 id="artistProfileHeading">Share your sound</h2>
+                    </div>
+                    <span class="section-icon" aria-hidden="true">♫</span>
+                </div>
+                <p class="card-description">Upload a track, add its release details, and share it with listeners.</p>
+                <a class="button primary profile-action" href="release_song.html">Release a song <span
+                        aria-hidden="true">→</span></a>
+            </section>
+
+            <section class="profile-grid" aria-label="Artist studio shortcuts">
+                <article class="profile-card">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">YOUR IDENTITY</p><h2 id="artistName">Loading profile…</h2></div>
+                        <span class="section-icon" aria-hidden="true">♫</span>
+                    </div>
+                    <p class="card-description" id="artistSummary">Your artist profile details and public preview.</p>
+                    <a class="profile-breadcrumb" href="artist_profile.html">Manage artist profile →</a>
+                </article>
+                <article class="profile-card">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">LISTENER VIEW</p><h2>Preview your public profile</h2></div>
+                        <span class="section-icon" aria-hidden="true">♡</span>
+                    </div>
+                    <p class="card-description">See your artist bio, links, and released songs as listeners see them.</p>
+                    <a class="profile-breadcrumb" id="publicProfileLink" href="artist_public_profile.html">View public artist profile →</a>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const songsContainer = document.getElementById('homepageSongs');
+        let saveCsrfToken = '';
+        let homepageSongs = [];
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            if (!response.ok) {
+                throw new Error('Could not load the artist account.');
+            }
+            return response.json();
+        }).then(data => {
+            if (!data) return;
+            if (!data.success || !data.profile || data.profile.role !== 'Artist') {
+                throw new Error(data.message || 'Could not load the artist account.');
+            }
+
+            const profile = data.profile;
+            saveCsrfToken = profile.csrfToken || '';
+            document.getElementById('artistGreeting').textContent =
+                `Welcome, ${profile.artistName || profile.username}`;
+            document.getElementById('artistName').textContent = profile.artistName || 'Not provided';
+            document.getElementById('artistSummary').textContent =
+                `${profile.genre || 'Artist'} · ${profile.language || 'Language not provided'}`;
+            document.getElementById('publicProfileLink').href =
+                `artist_public_profile.html?artist_id=${encodeURIComponent(profile.id)}`;
+
+            const profilePicture = document.getElementById('profilePicture');
+            if (profile.profilePicture) {
+                profilePicture.src = profile.profilePicture;
+                profilePicture.alt = `${profile.username} profile picture`;
+                profilePicture.hidden = false;
+                document.getElementById('profileInitial').hidden = true;
+            } else {
+                document.getElementById('profileInitial').textContent =
+                    Array.from(profile.username)[0] || 'A';
+            }
+        }).catch(error => {
+            console.error('Could not load artist account.', error);
+            document.getElementById('artistGreeting').textContent = 'Artist account unavailable';
+            document.getElementById('artistName').textContent = 'Could not load profile';
+            document.getElementById('artistSummary').textContent = 'Profile could not be loaded.';
+        });
+
+        function createSongRow(song) {
+            const row = document.createElement('article');
+            row.className = 'release-row';
+
+            const cover = document.createElement('div');
+            cover.className = 'release-cover';
+            if (song.coverUrl) {
+                const image = document.createElement('img');
+                image.src = song.coverUrl;
+                image.alt = '';
+                cover.append(image);
+            } else {
+                cover.textContent = '♫';
+                cover.setAttribute('aria-hidden', 'true');
+            }
+
+            const details = document.createElement('div');
+            details.className = 'release-details';
+            const title = document.createElement('h4');
+            title.textContent = song.title;
+            const artist = document.createElement('p');
+            artist.className = 'release-artist';
+            artist.textContent = `${song.artistName} · ${song.genre}`;
+            const metadata = document.createElement('p');
+            metadata.className = 'release-metadata';
+            metadata.textContent = [
+                new Date(`${song.releaseDate}T00:00:00`).getFullYear(),
+                song.language,
+                song.mood
+            ].filter(Boolean).join(' · ');
+            const actions = document.createElement('div');
+            actions.className = 'release-actions';
+            const playButton = document.createElement('button');
+            playButton.type = 'button';
+            playButton.className = 'release-play';
+            playButton.textContent = '▶ Play';
+            playButton.setAttribute('aria-label', `Play ${song.title} by ${song.artistName}`);
+            playButton.addEventListener('click', () => {
+                window.openMelodyMatchPlayer(homepageSongs, song.id, saveCsrfToken);
+            });
+            const saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'release-save';
+            saveButton.setAttribute('aria-pressed', String(song.saved));
+            saveButton.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+            saveButton.addEventListener('click', () => toggleSave(song, saveButton));
+            actions.append(playButton, saveButton);
+            details.append(title, artist, metadata, actions);
+            row.append(cover, details);
+            return row;
+        }
+
+        async function toggleSave(song, button) {
+            if (!saveCsrfToken) {
+                button.textContent = 'Sign in again to save';
+                return;
+            }
+            button.disabled = true;
+            try {
+                const response = await fetch('/MelodyMatch/Backend/php/save_song.php', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ song_id: String(song.id), csrf_token: saveCsrfToken })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'This song could not be saved.');
+                }
+                song.saved = result.saved;
+                song.saves = result.saves;
+                button.setAttribute('aria-pressed', String(song.saved));
+                button.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+            } catch (error) {
+                console.error('Could not save released song.', error);
+                button.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        fetch('/MelodyMatch/Backend/php/get_homepage_songs.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Could not load released songs.');
+            }
+            saveCsrfToken = result.csrfToken || saveCsrfToken;
+            return result.songs;
+        }).then(songs => {
+            if (!songs) return;
+            homepageSongs = songs;
+            songsContainer.replaceChildren();
+            if (songs.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'release-empty';
+                empty.textContent = 'New artist releases will appear here.';
+                songsContainer.append(empty);
+                return;
+            }
+            songs.forEach(song => songsContainer.append(createSongRow(song)));
+        }).catch(error => {
+            console.error('Could not load homepage releases.', error);
+            songsContainer.replaceChildren();
+            const message = document.createElement('p');
+            message.className = 'release-empty';
+            message.textContent = 'Released songs could not be loaded. Please refresh the page.';
+            songsContainer.append(message);
+        });
+
+    </script>
+</body>
+
+</html>

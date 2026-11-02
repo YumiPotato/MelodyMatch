@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Discover an artist and listen to their latest releases on MelodyMatch.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/artist-profile.css?v=20261103-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Artist profile navigation">
+                <a href="/MelodyMatch/Frontend/html/register.html">♫ Discover MelodyMatch</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>Artist profile
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb">MelodyMatch <span aria-hidden="true">/</span> Artist</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
+                    Dark</button>
+            </header>
+
+            <section class="profile-overview public-artist-overview">
+                <div class="profile-avatar">
+                    <img id="publicArtistPicture" alt="" hidden>
+                    <span id="publicArtistInitial">♫</span>
+                </div>
+                <div class="profile-identity">
+                    <p class="profile-kicker">MELODYMATCH ARTIST</p>
+                    <h1 id="publicArtistName">Loading artist…</h1>
+                    <p class="profile-username" id="publicArtistGenre">Artist</p>
+                    <p class="artist-biography" id="publicArtistBiography"></p>
+                    <div class="public-social-links" id="publicSocialLinks" aria-label="Artist social links"></div>
+                </div>
+            </section>
+
+            <section class="section public-releases" aria-labelledby="publicReleasesHeading">
+                <div class="section-title">
+                    <h3 id="publicReleasesHeading">Releases</h3>
+                    <span class="public-release-count" id="publicReleaseCount"></span>
+                </div>
+                <div class="public-song-list" id="publicSongList" aria-live="polite">
+                    <p class="empty-state">Loading artist releases…</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        function addSocialLink(container, label, value) {
+            if (!value) return;
+            try {
+                const url = new URL(value);
+                if (!['http:', 'https:'].includes(url.protocol)) return;
+                const link = document.createElement('a');
+                link.href = url.href;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = label;
+                container.append(link);
+            } catch (error) {
+                console.error('Could not display public artist social link.', error);
+            }
+        }
+
+        function buildSongCard(song) {
+            const article = document.createElement('article');
+            article.className = 'public-song-card';
+            if (song.coverUrl) {
+                const cover = document.createElement('img');
+                cover.className = 'public-song-cover';
+                cover.src = song.coverUrl;
+                cover.alt = `${song.title} cover art`;
+                article.append(cover);
+            } else {
+                const cover = document.createElement('div');
+                cover.className = 'public-song-cover public-song-cover-placeholder';
+                cover.setAttribute('aria-hidden', 'true');
+                cover.textContent = '♫';
+                article.append(cover);
+            }
+
+            const details = document.createElement('div');
+            details.className = 'public-song-details';
+            const heading = document.createElement('h2');
+            heading.textContent = song.title;
+            const metadata = document.createElement('p');
+            const releaseDate = new Date(`${song.releaseDate}T00:00:00`);
+            metadata.textContent = [
+                song.genre,
+                song.language,
+                song.mood,
+                Number.isNaN(releaseDate.getTime())
+                    ? song.releaseDate
+                    : releaseDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+            ].filter(Boolean).join(' · ');
+            details.append(heading, metadata);
+            if (song.description) {
+                const description = document.createElement('p');
+                description.className = 'public-song-description';
+                description.textContent = song.description;
+                details.append(description);
+            }
+            if (song.audioUrl) {
+                const player = document.createElement('audio');
+                player.controls = true;
+                player.preload = 'none';
+                player.src = song.audioUrl;
+                player.setAttribute('aria-label', `Play ${song.title}`);
+                details.append(player);
+            }
+            article.append(details);
+            return article;
+        }
+
+        const artistId = new URLSearchParams(window.location.search).get('artist_id');
+        const songList = document.getElementById('publicSongList');
+        if (!artistId || !/^[1-9]\d*$/.test(artistId)) {
+            document.getElementById('publicArtistName').textContent = 'Artist not found';
+            songList.innerHTML = '<p class="empty-state">Choose a valid artist profile to preview.</p>';
+        } else {
+            fetch(`/MelodyMatch/Backend/php/get_public_artist_profile.php?artist_id=${encodeURIComponent(artistId)}`, {
+                headers: { Accept: 'application/json' }
+            }).then(async response => {
+                if (!response.ok) {
+                    const result = await response.json();
+                    throw new Error(result.message || 'This artist profile could not be loaded.');
+                }
+                return response.json();
+            }).then(data => {
+                if (!data.success || !data.profile) {
+                    throw new Error(data.message || 'This artist profile could not be loaded.');
+                }
+
+                const artist = data.profile;
+                const displayName = artist.artistName || artist.username;
+                document.title = `${displayName} | MelodyMatch`;
+                document.getElementById('publicArtistName').textContent = displayName;
+                document.getElementById('publicArtistGenre').textContent =
+                    [artist.genre, artist.language].filter(Boolean).join(' · ') || 'MelodyMatch artist';
+                document.getElementById('publicArtistBiography').textContent =
+                    artist.biography || 'This artist has not added a biography yet.';
+                document.getElementById('publicArtistInitial').textContent =
+                    Array.from(displayName)[0] || '♫';
+                if (artist.profilePicture) {
+                    const image = document.getElementById('publicArtistPicture');
+                    image.src = artist.profilePicture;
+                    image.alt = `${displayName} profile picture`;
+                    image.hidden = false;
+                    document.getElementById('publicArtistInitial').hidden = true;
+                }
+
+                const socialLinks = document.getElementById('publicSocialLinks');
+                addSocialLink(socialLinks, 'YouTube', artist.youtubeUrl);
+                addSocialLink(socialLinks, 'TikTok', artist.tiktokUrl);
+
+                const songs = Array.isArray(artist.songs) ? artist.songs : [];
+                document.getElementById('publicReleaseCount').textContent =
+                    `${songs.length} ${songs.length === 1 ? 'release' : 'releases'}`;
+                songList.replaceChildren();
+                if (songs.length) {
+                    songs.forEach(song => songList.append(buildSongCard(song)));
+                } else {
+                    const empty = document.createElement('p');
+                    empty.className = 'empty-state';
+                    empty.textContent = 'No songs have been released yet.';
+                    songList.append(empty);
+                }
+            }).catch(error => {
+                console.error('Could not load public artist profile.', error);
+                document.getElementById('publicArtistName').textContent = 'Artist profile unavailable';
+                songList.innerHTML = '';
+                const message = document.createElement('p');
+                message.className = 'empty-state';
+                message.textContent = error.message || 'Artist releases could not be loaded.';
+                songList.append(message);
+            });
+        }
+    </script>
+</body>
+
+</html>

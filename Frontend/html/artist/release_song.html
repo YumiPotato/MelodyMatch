@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release a Song | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/artist-profile.css?v=20261103-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/song-release.css?v=20261103-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Artist navigation">
+                <a href="artist_homepage.html">✦ Artist studio</a>
+                <a href="artist_profile.html">♫ Artist profile</a>
+                <a class="active" href="release_song.html" aria-current="page">＋ Release new song</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>Artist account
+            </div>
+            <div class="auth-actions">
+                <a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a>
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb"><a href="artist_homepage.html">Artist studio</a>
+                    <span aria-hidden="true">/</span> New release</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
+                    Dark</button>
+                <a class="profile-pill" href="artist_profile.html" aria-label="View artist profile">
+                    <span id="profileInitial" aria-hidden="true">A</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">YOUR NEXT TRACK</p>
+                    <h1>Release a new song</h1>
+                    <p>Share an audio track and its details with MelodyMatch listeners.</p>
+                </div>
+                <span class="account-badge"><span aria-hidden="true">●</span> Artist</span>
+            </section>
+
+            <form class="profile-card release-form" id="releaseForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" id="csrfToken">
+
+                <section class="release-section" aria-labelledby="songDetailsHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">01 · SONG DETAILS</p><h2 id="songDetailsHeading">Tell listeners
+                            about your track</h2></div>
+                        <span class="section-icon" aria-hidden="true">♫</span>
+                    </div>
+
+                    <div class="release-fields">
+                        <div class="release-field release-field-wide">
+                            <label for="songTitle">Song title</label>
+                            <input id="songTitle" name="title" type="text" maxlength="150" autocomplete="off"
+                                placeholder="Give your song a name" required>
+                        </div>
+                        <div class="release-field">
+                            <label for="songGenre">Genre</label>
+                            <input id="songGenre" name="genre" type="text" maxlength="100"
+                                placeholder="e.g. Indie pop" required>
+                        </div>
+                        <div class="release-field">
+                            <label for="songLanguage">Language</label>
+                            <input id="songLanguage" name="language" type="text" maxlength="50"
+                                placeholder="e.g. English" required>
+                        </div>
+                        <div class="release-field">
+                            <label for="songMood">Mood <span class="optional-label">Optional</span></label>
+                            <input id="songMood" name="mood" type="text" maxlength="100"
+                                placeholder="e.g. Relaxed, Dreamy">
+                        </div>
+                        <div class="release-field release-field-wide">
+                            <label for="songDescription">Description <span class="optional-label">Optional</span></label>
+                            <textarea id="songDescription" name="description" rows="4" maxlength="2000"
+                                placeholder="Share the story or feeling behind this release."></textarea>
+                            <span class="field-help">Up to 2,000 characters.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="release-section" aria-labelledby="audioHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">02 · YOUR MUSIC</p><h2 id="audioHeading">Add your audio</h2></div>
+                        <span class="section-icon" aria-hidden="true">♫</span>
+                    </div>
+                    <label class="upload-dropzone" for="audioFile">
+                        <span class="upload-symbol" aria-hidden="true">↑</span>
+                        <strong>Choose your audio file</strong>
+                        <span>MP3, WAV, M4A, AAC, OGG, or FLAC · up to 30 MB</span>
+                        <span class="selected-file" id="audioFileName">No audio file selected</span>
+                    </label>
+                    <input class="visually-hidden-input" id="audioFile" name="audio_file" type="file"
+                        accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg,audio/flac"
+                        required aria-describedby="audioHelp">
+                    <p class="field-help" id="audioHelp">Only audio files in supported formats are accepted.</p>
+
+                    <div class="release-fields cover-field">
+                        <div class="release-field release-field-wide">
+                            <label for="coverArt">Cover art <span class="optional-label">Optional</span></label>
+                            <input class="cover-file-input" id="coverArt" name="cover_art" type="file"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                aria-describedby="coverHelp">
+                            <span class="field-help" id="coverHelp">JPEG, PNG, or WebP · up to 5 MB.</span>
+                            <span class="selected-file" id="coverFileName">No cover art selected</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="release-section" aria-labelledby="scheduleHeading">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">03 · RELEASE DATE</p><h2 id="scheduleHeading">When should it
+                            come out?</h2></div>
+                        <span class="section-icon" aria-hidden="true">◷</span>
+                    </div>
+                    <div class="release-field release-date-field">
+                        <label for="releaseDate">Release date</label>
+                        <input id="releaseDate" name="release_date" type="date" required>
+                        <span class="field-help">Future dates will be scheduled and appear publicly on their release
+                            date.</span>
+                    </div>
+                </section>
+
+                <p class="release-message" id="releaseMessage" role="status" aria-live="polite"></p>
+                <div class="release-actions">
+                    <a class="button sign-out-button" href="artist_homepage.html">Cancel</a>
+                    <button class="button primary release-submit" id="releaseSubmit" type="submit">Release song
+                        <span aria-hidden="true">→</span></button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('melodyMatchTheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        const releaseForm = document.getElementById('releaseForm');
+        const releaseMessage = document.getElementById('releaseMessage');
+        const releaseSubmit = document.getElementById('releaseSubmit');
+        const audioFile = document.getElementById('audioFile');
+        const coverArt = document.getElementById('coverArt');
+        const maxAudioSize = 30 * 1024 * 1024;
+        const maxCoverSize = 5 * 1024 * 1024;
+        let csrfToken = '';
+        let artistGenre = '';
+        let artistLanguage = '';
+
+        document.getElementById('releaseDate').value =
+            new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        document.getElementById('releaseDate').min =
+            new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+        audioFile.addEventListener('change', () => {
+            document.getElementById('audioFileName').textContent =
+                audioFile.files[0] ? audioFile.files[0].name : 'No audio file selected';
+        });
+        coverArt.addEventListener('change', () => {
+            document.getElementById('coverFileName').textContent =
+                coverArt.files[0] ? coverArt.files[0].name : 'No cover art selected';
+        });
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            if (!response.ok) throw new Error('Could not load artist account details.');
+            return response.json();
+        }).then(data => {
+            if (!data) return;
+            if (!data.success || !data.profile || data.profile.role !== 'Artist') {
+                throw new Error(data.message || 'An artist account is required to release music.');
+            }
+
+            const profile = data.profile;
+            csrfToken = profile.csrfToken || '';
+            artistGenre = profile.genre || '';
+            artistLanguage = profile.language || '';
+            document.getElementById('csrfToken').value = csrfToken;
+            document.getElementById('songGenre').value = artistGenre;
+            document.getElementById('songLanguage').value = artistLanguage;
+            document.getElementById('profileInitial').textContent =
+                Array.from(profile.artistName || profile.username)[0] || 'A';
+
+            const profilePicture = document.getElementById('profilePicture');
+            if (profile.profilePicture) {
+                profilePicture.src = profile.profilePicture;
+                profilePicture.alt = `${profile.username} profile picture`;
+                profilePicture.hidden = false;
+                document.getElementById('profileInitial').hidden = true;
+            }
+        }).catch(error => {
+            console.error('Could not load artist release form.', error);
+            releaseMessage.textContent = error.message || 'Artist details could not be loaded.';
+            releaseMessage.classList.add('error');
+            releaseSubmit.disabled = true;
+        });
+
+        releaseForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            releaseMessage.textContent = '';
+            releaseMessage.classList.remove('error', 'success');
+
+            if (!csrfToken) {
+                releaseMessage.textContent = 'Your artist session is not ready. Refresh and try again.';
+                releaseMessage.classList.add('error');
+                return;
+            }
+            if (!audioFile.files.length || audioFile.files[0].size > maxAudioSize) {
+                releaseMessage.textContent = 'Choose an audio file smaller than 30 MB.';
+                releaseMessage.classList.add('error');
+                return;
+            }
+            if (coverArt.files.length && coverArt.files[0].size > maxCoverSize) {
+                releaseMessage.textContent = 'Choose cover art smaller than 5 MB.';
+                releaseMessage.classList.add('error');
+                return;
+            }
+
+            releaseSubmit.disabled = true;
+            releaseSubmit.textContent = 'Uploading song…';
+            try {
+                const response = await fetch('/MelodyMatch/Backend/php/release_song.php', {
+                    method: 'POST',
+                    body: new FormData(releaseForm),
+                    headers: { Accept: 'application/json' }
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Your song could not be released.');
+                }
+
+                releaseMessage.textContent = result.message;
+                releaseMessage.classList.add('success');
+                releaseForm.reset();
+                document.getElementById('csrfToken').value = csrfToken;
+                document.getElementById('releaseDate').value =
+                    new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+                document.getElementById('songGenre').value = artistGenre;
+                document.getElementById('songLanguage').value = artistLanguage;
+                document.getElementById('audioFileName').textContent = 'No audio file selected';
+                document.getElementById('coverFileName').textContent = 'No cover art selected';
+            } catch (error) {
+                releaseMessage.textContent = error.message || 'Could not connect to the release service.';
+                releaseMessage.classList.add('error');
+            } finally {
+                releaseSubmit.disabled = false;
+                releaseSubmit.innerHTML = 'Release song <span aria-hidden="true">→</span>';
+            }
+        });
+    </script>
+</body>
+
+</html>

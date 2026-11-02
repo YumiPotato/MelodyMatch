@@ -37,8 +37,9 @@
                     Profile</div>
                 <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙
                     Dark</button>
-                <a class="profile-pill" href="listener_profile.html" aria-label="Listener profile">
-                    <span aria-hidden="true">L</span>
+                <a class="profile-pill" id="profileLink" href="listener_profile.html" aria-label="Listener profile">
+                    <span id="profileInitial" aria-hidden="true">L</span>
+                    <img id="profilePicture" alt="" hidden>
                 </a>
             </header>
 
@@ -52,12 +53,15 @@
             </section>
 
             <section class="profile-overview" aria-labelledby="profileName">
-                <div class="profile-avatar" aria-hidden="true">♪</div>
+                <div class="profile-avatar" aria-hidden="true">
+                    <img id="profileHeroPicture" alt="" hidden>
+                    <span id="profileHeroInitial">L</span>
+                </div>
                 <div class="profile-identity">
                     <p class="profile-kicker">PROFILE</p>
-                    <h2 id="profileName">Your display name</h2>
-                    <p class="profile-username">@your-username</p>
-                    <p class="profile-photo-note">No profile picture added</p>
+                    <h2 id="profileName">Loading profile…</h2>
+                    <p class="profile-username" id="profileUsername">@listener</p>
+                    <p class="profile-photo-note" id="profilePhotoNote">Loading profile picture…</p>
                 </div>
                 <a class="button primary profile-action" href="#account-settings">Edit profile <span
                         aria-hidden="true">→</span></a>
@@ -73,9 +77,8 @@
                         <span class="section-icon" aria-hidden="true">♡</span>
                     </div>
                     <dl class="detail-list">
-                        <div><dt>Email address</dt><dd>Not connected</dd></div>
-                        <div><dt>Country</dt><dd>Not provided</dd></div>
-                        <div><dt>Joined</dt><dd>Not available</dd></div>
+                        <div><dt>Email address</dt><dd id="profileEmail">Loading…</dd></div>
+                        <div><dt>Joined</dt><dd id="profileJoined">Loading…</dd></div>
                     </dl>
                 </section>
 
@@ -145,14 +148,16 @@
                     </div>
                     <div class="security-status">
                         <span class="status-indicator" aria-hidden="true"></span>
-                        <div><strong>Preview account</strong><p>Account status and sign-in are not connected yet.</p></div>
+                        <div><strong id="profileStatus">Loading account…</strong><p>Your account is signed in securely.</p></div>
                     </div>
-                    <a class="button sign-out-button" href="../login.html">Sign out <span aria-hidden="true">↗</span></a>
+                    <a class="button sign-out-button" href="/MelodyMatch/Backend/php/logout.php">Sign out <span aria-hidden="true">↗</span></a>
                 </section>
             </div>
         </main>
     </div>
 
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
     <script>
         const themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('melodyMatchTheme');
@@ -171,8 +176,11 @@
         });
 
         const preferenceHistory = document.getElementById('preferenceHistory');
-        const historyValue = localStorage.getItem('melodyMatchPreferenceHistory');
-        if (historyValue) {
+        let preferenceHistoryKey = null;
+
+        function renderPreferenceHistory() {
+            const historyValue = localStorage.getItem(preferenceHistoryKey);
+            if (!historyValue) return;
             try {
                 const history = JSON.parse(historyValue);
                 if (!Array.isArray(history)) {
@@ -230,6 +238,66 @@
                 preferenceHistory.innerHTML = '<p class="empty-state">Preference history could not be loaded.</p>';
             }
         }
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            if (!response.ok) {
+                throw new Error('Could not load the listener profile.');
+            }
+            return response.json();
+        }).then(data => {
+            if (!data) return;
+            if (!data.success || !data.profile) {
+                throw new Error(data.message || 'Could not load the listener profile.');
+            }
+
+            const profile = data.profile;
+            const initial = Array.from(profile.username)[0] || 'L';
+            const profileInitial = document.getElementById('profileInitial');
+            const profilePicture = document.getElementById('profilePicture');
+            const heroInitial = document.getElementById('profileHeroInitial');
+            const heroPicture = document.getElementById('profileHeroPicture');
+
+            profileInitial.textContent = initial;
+            heroInitial.textContent = initial;
+            document.getElementById('profileName').textContent = profile.username;
+            document.getElementById('profileUsername').textContent = `@${profile.username}`;
+            document.getElementById('profileEmail').textContent = profile.email;
+            document.getElementById('profileJoined').textContent = profile.joined
+                ? new Date(`${profile.joined}T00:00:00`).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+                : 'Not available';
+            document.getElementById('profileStatus').textContent = `${profile.status} account`;
+            document.getElementById('profilePhotoNote').textContent = profile.profilePicture
+                ? 'Profile picture'
+                : 'No profile picture added';
+
+            if (profile.profilePicture) {
+                [profilePicture, heroPicture].forEach(image => {
+                    image.src = profile.profilePicture;
+                    image.alt = `${profile.username} profile picture`;
+                    image.hidden = false;
+                });
+                profileInitial.hidden = true;
+                heroInitial.hidden = true;
+            }
+
+            preferenceHistoryKey = `melodyMatchPreferenceHistory:${profile.id}`;
+            renderPreferenceHistory();
+        }).catch(error => {
+            console.error('Could not load listener profile.', error);
+            document.getElementById('profileName').textContent = 'Profile unavailable';
+            document.getElementById('profileEmail').textContent = 'Could not load account data';
+            document.getElementById('profileStatus').textContent = 'Account unavailable';
+        });
     </script>
 </body>
 
