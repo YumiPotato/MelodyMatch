@@ -18,6 +18,12 @@ function respond($statusCode, $success, $message = '', $profile = null)
     exit;
 }
 
+session_start();
+$viewerId = isset($_SESSION['user_id']) &&
+    in_array($_SESSION['role'] ?? '', ['Listener', 'Artist'], true)
+    ? (int) $_SESSION['user_id']
+    : 0;
+
 $artistIdValue = isset($_GET['artist_id']) && is_string($_GET['artist_id'])
     ? $_GET['artist_id']
     : '';
@@ -85,16 +91,22 @@ if (is_string($storedProfilePicture) &&
 $songs = [];
 $songStatement = mysqli_prepare(
     $dbConnect,
-    "SELECT title, description, genre, language, mood, release_date, audio_path, cover_path,
-            views_count, likes_count, saves_count
-     FROM songs
-     WHERE userID = ? AND status IN ('published', 'scheduled') AND release_date <= CURDATE()
-     ORDER BY release_date DESC, songID DESC"
+    "SELECT s.songID, s.title, s.description, s.genre, s.language, s.mood, s.release_date,
+            s.audio_path, s.cover_path, s.views_count, s.likes_count, s.saves_count,
+            viewer_save.songID, viewer_like.songID
+     FROM songs s
+     LEFT JOIN saved_songs viewer_save
+       ON viewer_save.songID = s.songID AND viewer_save.userID = ?
+     LEFT JOIN song_likes viewer_like
+       ON viewer_like.songID = s.songID AND viewer_like.userID = ?
+     WHERE s.userID = ? AND s.status IN ('published', 'scheduled') AND s.release_date <= CURDATE()
+     ORDER BY s.release_date DESC, s.songID DESC"
 );
-if (!$songStatement || !mysqli_stmt_bind_param($songStatement, 'i', $artistId) ||
+if (!$songStatement || !mysqli_stmt_bind_param($songStatement, 'iii', $viewerId, $viewerId, $artistId) ||
     !mysqli_stmt_execute($songStatement) ||
     !mysqli_stmt_bind_result(
         $songStatement,
+        $songId,
         $songTitle,
         $songDescription,
         $songGenre,
@@ -105,7 +117,9 @@ if (!$songStatement || !mysqli_stmt_bind_param($songStatement, 'i', $artistId) |
         $songCoverPath,
         $songViews,
         $songLikes,
-        $songSaves
+        $songSaves,
+        $savedSongId,
+        $likedSongId
     )) {
     error_log('Could not query public artist releases: ' . ($songStatement ? mysqli_stmt_error($songStatement) : mysqli_error($dbConnect)));
     if ($songStatement) {
@@ -136,6 +150,7 @@ while (mysqli_stmt_fetch($songStatement)) {
     }
 
     $songs[] = [
+        'id' => (int) $songId,
         'title' => $songTitle,
         'description' => $songDescription,
         'genre' => $songGenre,
@@ -146,7 +161,9 @@ while (mysqli_stmt_fetch($songStatement)) {
         'coverUrl' => $coverUrl,
         'views' => (int) $songViews,
         'likes' => (int) $songLikes,
-        'saves' => (int) $songSaves
+        'saves' => (int) $songSaves,
+        'saved' => $savedSongId !== null,
+        'liked' => $likedSongId !== null
     ];
 }
 mysqli_stmt_close($songStatement);
@@ -160,5 +177,6 @@ respond(200, true, '', [
     'biography' => $biography,
     'youtubeUrl' => $youtubeUrl,
     'tiktokUrl' => $tiktokUrl,
+    'csrfToken' => $viewerId > 0 ? ($_SESSION['csrf_token'] ?? null) : null,
     'songs' => $songs
 ]);

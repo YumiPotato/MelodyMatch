@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/music-library.css?v=20261104-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Music navigation" id="musicNavigation">
+                <a href="/MelodyMatch/Frontend/html/register.html">♫ MelodyMatch</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>
+                <span id="accountRole">Music account</span>
+            </div>
+            <div class="auth-actions"><a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a></div>
+        </aside>
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb"><a id="backHome" href="#">Music</a> <span aria-hidden="true">/</span> Song</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
+            </header>
+            <article class="song-detail-card" id="songDetails" aria-live="polite">
+                <p class="empty-state">Loading song details…</p>
+            </article>
+            <p class="song-detail-message" id="songDetailMessage" role="status" aria-live="polite"></p>
+        </main>
+    </div>
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const songDetails = document.getElementById('songDetails');
+        const songDetailMessage = document.getElementById('songDetailMessage');
+        let accountProfile = null;
+        let artistPlaybackQueue = [];
+        let artistPlaybackQueuePromise = Promise.resolve();
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+        applyTheme(localStorage.getItem('melodyMatchTheme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        function addExternalLink(container, label, value) {
+            if (!value) return;
+            try {
+                const url = new URL(value);
+                if (!['http:', 'https:'].includes(url.protocol)) return;
+                const link = document.createElement('a');
+                link.href = url.href;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = label;
+                container.append(link);
+            } catch (error) {
+                console.error('Could not display artist external link.', error);
+            }
+        }
+
+        function createTagGroup(label, value) {
+            const group = document.createElement('section');
+            group.className = 'song-detail-tag-group';
+            const heading = document.createElement('h2');
+            heading.textContent = label;
+            const tags = document.createElement('div');
+            tags.className = 'song-detail-tags';
+            String(value || '').split(',').map(item => item.trim()).filter(Boolean).forEach(item => {
+                const tag = document.createElement('span');
+                tag.textContent = item;
+                tags.append(tag);
+            });
+            group.append(heading, tags);
+            return group;
+        }
+
+        function renderSong(song) {
+            songDetails.replaceChildren();
+            const cover = document.createElement('div');
+            cover.className = 'song-detail-cover';
+            if (song.coverUrl) {
+                const image = document.createElement('img');
+                image.src = song.coverUrl;
+                image.alt = `${song.title} cover art`;
+                cover.append(image);
+            } else {
+                cover.textContent = '♫';
+                cover.setAttribute('aria-hidden', 'true');
+            }
+
+            const body = document.createElement('div');
+            body.className = 'song-detail-body';
+            const heading = document.createElement('h1');
+            heading.textContent = song.title;
+            const artist = document.createElement('a');
+            artist.className = 'song-detail-artist';
+            artist.href = `/MelodyMatch/Frontend/html/artist/artist_public_profile.html?artist_id=${encodeURIComponent(song.artistId)}`;
+            artist.textContent = song.artistName;
+            const releaseMetadata = document.createElement('p');
+            releaseMetadata.className = 'song-detail-metadata';
+            const date = new Date(`${song.releaseDate}T00:00:00`);
+            releaseMetadata.textContent = Number.isNaN(date.getTime())
+                ? `Released ${song.releaseDate}`
+                : `Released ${date.toLocaleDateString()}`;
+            const stats = document.createElement('p');
+            stats.className = 'song-detail-stats';
+            stats.textContent = `${song.views} views · ${song.likes} likes · ${song.saves} saves`;
+            body.append(
+                heading,
+                artist,
+                createTagGroup('Genre', song.genre),
+                createTagGroup('Mood', song.mood),
+                createTagGroup('Language', song.language),
+                releaseMetadata,
+                stats
+            );
+            if (song.description) {
+                const description = document.createElement('p');
+                description.className = 'song-detail-description';
+                description.textContent = song.description;
+                body.append(description);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'song-detail-actions';
+            const playButton = document.createElement('button');
+            playButton.type = 'button';
+            playButton.className = 'button primary';
+            playButton.textContent = '▶ Play';
+            playButton.setAttribute('aria-label', `Play ${song.title}`);
+            playButton.addEventListener('click', async () => {
+                const currentQueue = window.MelodyMatchPlayerState;
+                if (currentQueue && String(currentQueue.accountId) === String(accountProfile.id) &&
+                    currentQueue.songs.some(item => String(item.id) === String(song.id))) {
+                    window.playMelodyMatchSong(song.id);
+                    return;
+                }
+                await artistPlaybackQueuePromise;
+                const songs = artistPlaybackQueue.length ? artistPlaybackQueue : [song];
+                window.openMelodyMatchPlayer(songs, song.id, song.csrfToken);
+            });
+            const likeButton = document.createElement('button');
+            likeButton.type = 'button';
+            likeButton.className = 'song-detail-reaction song-detail-like';
+            likeButton.setAttribute('aria-label', 'Like song');
+            const saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'song-detail-reaction song-detail-save';
+            saveButton.setAttribute('aria-label', 'Save song');
+
+            function updateReactionButtons() {
+                likeButton.textContent = `${song.liked ? '♥ Liked' : '♡ Like'} · ${song.likes}`;
+                likeButton.setAttribute('aria-pressed', String(Boolean(song.liked)));
+                saveButton.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+                saveButton.setAttribute('aria-pressed', String(Boolean(song.saved)));
+                stats.textContent = `${song.views} views · ${song.likes} likes · ${song.saves} saves`;
+            }
+
+            async function toggleReaction(endpoint, button, reaction) {
+                if (!accountProfile || !song.csrfToken) {
+                    songDetailMessage.textContent = 'Sign in again to like or save songs.';
+                    return;
+                }
+                button.disabled = true;
+                try {
+                    const profile = await window.MelodyMatchMusicPlayer.syncAccount();
+                    if (!profile || String(profile.id) !== String(accountProfile.id)) {
+                        throw new Error('Your signed-in account changed. Please refresh the page.');
+                    }
+                    const response = await fetch(`/MelodyMatch/Backend/php/${endpoint}`, {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            song_id: String(song.id),
+                            csrf_token: song.csrfToken
+                        })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || 'This song could not be updated.');
+                    }
+                    song[reaction] = result[reaction];
+                    song[reaction === 'liked' ? 'likes' : 'saves'] = result[reaction === 'liked' ? 'likes' : 'saves'];
+                    updateReactionButtons();
+                    if (typeof window.updateMelodyMatchPlayerSong === 'function') {
+                        window.updateMelodyMatchPlayerSong(song.id, {
+                            [reaction]: song[reaction],
+                            [reaction === 'liked' ? 'likes' : 'saves']: song[reaction === 'liked' ? 'likes' : 'saves']
+                        });
+                    }
+                    songDetailMessage.textContent = result.message;
+                } catch (error) {
+                    console.error('Could not update song reaction.', error);
+                    songDetailMessage.textContent = error.message || 'This song could not be updated.';
+                } finally {
+                    button.disabled = false;
+                }
+            }
+            likeButton.addEventListener('click', () => toggleReaction('like_song.php', likeButton, 'liked'));
+            saveButton.addEventListener('click', () => toggleReaction('save_song.php', saveButton, 'saved'));
+            updateReactionButtons();
+            actions.append(playButton, likeButton, saveButton);
+
+            const artistSection = document.createElement('section');
+            artistSection.className = 'song-detail-artist-card';
+            if (song.artistPicture) {
+                const image = document.createElement('img');
+                image.src = song.artistPicture;
+                image.alt = '';
+                artistSection.append(image);
+            }
+            const artistInfo = document.createElement('div');
+            const artistHeading = document.createElement('h2');
+            artistHeading.textContent = 'About the artist';
+            const artistName = document.createElement('a');
+            artistName.href = artist.href;
+            artistName.textContent = song.artistName;
+            const biography = document.createElement('p');
+            biography.textContent = song.artistBiography || 'This artist has not added a biography yet.';
+            const social = document.createElement('div');
+            social.className = 'song-detail-social';
+            addExternalLink(social, 'YouTube', song.youtubeUrl);
+            addExternalLink(social, 'TikTok', song.tiktokUrl);
+            artistInfo.append(artistHeading, artistName, biography, social);
+            artistSection.append(artistInfo);
+            songDetails.append(cover, body, actions, artistSection);
+            document.title = `${song.title} | MelodyMatch`;
+        }
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.profile) {
+                throw new Error(data.message || 'Your account could not be loaded.');
+            }
+            return data.profile;
+        }).then(profile => {
+            if (!profile) return;
+            accountProfile = profile;
+            const isArtist = profile.role === 'Artist';
+            const homeUrl = isArtist
+                ? '/MelodyMatch/Frontend/html/artist/artist_homepage.html'
+                : '/MelodyMatch/Frontend/html/listener/listener_homepage.html';
+            document.getElementById('accountRole').textContent = `${profile.role} account`;
+            document.getElementById('backHome').href = homeUrl;
+            document.getElementById('musicNavigation').innerHTML =
+                `<a href="${homeUrl}">‹ Back to ${isArtist ? 'Artist studio' : 'Discover'}</a>` +
+                '<a href="/MelodyMatch/Frontend/html/create_playlist.html">♪ Create playlist</a>';
+            const songId = new URLSearchParams(window.location.search).get('song_id');
+            if (!songId || !/^[1-9]\d*$/.test(songId)) {
+                throw new Error('Choose a valid song.');
+            }
+            return fetch(`/MelodyMatch/Backend/php/get_song_details.php?song_id=${encodeURIComponent(songId)}`, {
+                headers: { Accept: 'application/json' }
+            });
+        }).then(async response => {
+            if (!response) return;
+            const result = await response.json();
+            if (!response.ok || !result.success || !result.song) {
+                throw new Error(result.message || 'Song details could not be loaded.');
+            }
+            result.song.csrfToken = accountProfile.csrfToken || '';
+            artistPlaybackQueuePromise = fetch(`/MelodyMatch/Backend/php/get_public_artist_profile.php?artist_id=${encodeURIComponent(result.song.artistId)}`, {
+                headers: { Accept: 'application/json' }
+            }).then(async artistResponse => {
+                const artistResult = await artistResponse.json();
+                if (!artistResponse.ok || !artistResult.success || !artistResult.profile) {
+                    throw new Error(artistResult.message || 'The artist playback queue could not be loaded.');
+                }
+                artistPlaybackQueue = artistResult.profile.songs.filter(item => item.audioUrl);
+            }).catch(error => {
+                console.error('Could not load artist playback queue.', error);
+            }).catch(error => {
+                console.error('Could not load artist playback queue.', error);
+            });
+            renderSong(result.song);
+        }).catch(error => {
+            console.error('Could not load song details.', error);
+            songDetails.replaceChildren();
+            const message = document.createElement('p');
+            message.className = 'empty-state';
+            message.textContent = error.message || 'Song details are unavailable.';
+            songDetails.append(message);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Playlist | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/music-library.css?v=20261104-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Music navigation" id="musicNavigation">
+                <a href="/MelodyMatch/Frontend/html/register.html">♫ MelodyMatch</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>
+                <span id="accountRole">Music account</span>
+            </div>
+            <div class="auth-actions">
+                <a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a>
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb" id="pageBreadcrumb">MelodyMatch <span aria-hidden="true">/</span> Create playlist</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
+                <a class="profile-pill" id="profileLink" href="#" aria-label="View profile">
+                    <span id="profileInitial" aria-hidden="true">M</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">YOUR MUSIC, YOUR WAY</p>
+                    <h1>Create a playlist</h1>
+                    <p>Find tracks by song title or artist, or add songs from one of your playlists.</p>
+                </div>
+            </section>
+
+            <form class="profile-card playlist-form" id="playlistForm">
+                <input type="hidden" name="csrf_token" id="csrfToken">
+                <label for="playlistName">Playlist name</label>
+                <input id="playlistName" name="name" maxlength="100" placeholder="Give your playlist a name" required>
+                <label for="playlistDescription">Description <span class="optional-label">(Optional)</span></label>
+                <textarea id="playlistDescription" name="description" rows="3" maxlength="500"
+                    placeholder="What is this playlist for?"></textarea>
+
+                <div class="playlist-tag-grid">
+                    <div class="playlist-field">
+                        <label for="playlistMood">Mood <span class="optional-label">(Optional)</span></label>
+                        <select id="playlistMood" name="mood">
+                            <option value="">Any mood</option>
+                            <option>Happy</option><option>Sad</option><option>Relaxed</option><option>Energetic</option>
+                            <option>Romantic</option><option>Angry</option><option>Dreamy</option><option>Nostalgic</option>
+                            <option>Focused</option><option>Lonely</option><option>Excited</option><option>Calm</option>
+                        </select>
+                    </div>
+                    <div class="playlist-field">
+                        <label for="playlistGenre">Genre <span class="optional-label">(Optional)</span></label>
+                        <select id="playlistGenre" name="genre">
+                            <option value="">Any genre</option>
+                            <option>Pop</option><option>Rock</option><option>Hip-Hop</option><option>Electronic</option>
+                            <option>Classical</option><option>Jazz</option><option>Blues</option><option>Country</option>
+                            <option>R&amp;B</option><option>Folk</option>
+                        </select>
+                    </div>
+                </div>
+
+                <section class="playlist-picker" aria-labelledby="playlistSongsHeading">
+                    <div class="section-title">
+                        <div>
+                            <h2 id="playlistSongsHeading">Choose songs</h2>
+                            <p class="card-description">Search by song title, artist name, or one of your playlist names.</p>
+                        </div>
+                        <span id="selectionCount" class="playlist-selection-count" aria-live="polite">0 selected</span>
+                    </div>
+                    <label class="sr-only" for="playlistSearch">Search songs, artists, and playlists</label>
+                    <input id="playlistSearch" class="playlist-search" type="search"
+                        placeholder="Search songs, artists, and your playlists…" autocomplete="off">
+                    <div id="selectedPlaylistSongs" class="playlist-selected-songs" aria-live="polite"></div>
+                    <div id="playlistSearchResults" class="playlist-search-results" aria-live="polite">
+                        <p class="empty-state">Loading songs and playlists…</p>
+                    </div>
+                </section>
+
+                <p class="playlist-message" id="playlistMessage" role="status" aria-live="polite"></p>
+                <div class="playlist-actions">
+                    <a class="button text-button" id="cancelPlaylist" href="/MelodyMatch/Frontend/html/register.html">Cancel</a>
+                    <button class="button primary" id="createPlaylistButton" type="submit">Create playlist</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const searchResults = document.getElementById('playlistSearchResults');
+        const selectedSongsContainer = document.getElementById('selectedPlaylistSongs');
+        const playlistSearch = document.getElementById('playlistSearch');
+        const playlistForm = document.getElementById('playlistForm');
+        const playlistMessage = document.getElementById('playlistMessage');
+        const createButton = document.getElementById('createPlaylistButton');
+        const selectedSongIds = new Set();
+        const selectedSongs = new Map();
+        let csrfToken = '';
+        let loadedPlaylists = [];
+        let matchingSongs = [];
+        let currentQuery = '';
+        let searchRequest = 0;
+        let searchTimer = 0;
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+        applyTheme(localStorage.getItem('melodyMatchTheme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        function updateSelectionCount() {
+            document.getElementById('selectionCount').textContent =
+                `${selectedSongIds.size} ${selectedSongIds.size === 1 ? 'song' : 'songs'} selected`;
+            renderSelectedSongs();
+        }
+
+        function emptyMessage(container, message) {
+            const empty = document.createElement('p');
+            empty.className = 'empty-state';
+            empty.textContent = message;
+            container.replaceChildren(empty);
+        }
+
+        function toggleSong(song, checked) {
+            const songId = Number(song.id);
+            if (checked && selectedSongIds.size >= 100 && !selectedSongIds.has(songId)) {
+                playlistMessage.textContent = 'A playlist can contain up to 100 songs.';
+                renderSearchResults();
+                return;
+            }
+            if (checked) {
+                selectedSongIds.add(songId);
+                selectedSongs.set(songId, song);
+            } else {
+                selectedSongIds.delete(songId);
+                selectedSongs.delete(songId);
+            }
+            playlistMessage.textContent = '';
+            renderSearchResults();
+            updateSelectionCount();
+        }
+
+        function songTile(song) {
+            const label = document.createElement('label');
+            label.className = 'playlist-search-result';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = String(song.id);
+            checkbox.checked = selectedSongIds.has(Number(song.id));
+            checkbox.setAttribute('aria-label', `Add ${song.title} by ${song.artistName}`);
+            checkbox.addEventListener('change', () => toggleSong(song, checkbox.checked));
+            const cover = document.createElement('span');
+            cover.className = 'playlist-search-cover';
+            if (song.coverUrl) {
+                const image = document.createElement('img');
+                image.src = song.coverUrl;
+                image.alt = '';
+                cover.append(image);
+            } else {
+                cover.textContent = '♫';
+                cover.setAttribute('aria-hidden', 'true');
+            }
+            const details = document.createElement('span');
+            details.className = 'playlist-song-info';
+            const title = document.createElement('strong');
+            title.textContent = song.title;
+            const artist = document.createElement('span');
+            artist.textContent = song.artistName;
+            details.append(title, artist);
+            label.append(checkbox, cover, details);
+            return label;
+        }
+
+        function renderSelectedSongs() {
+            selectedSongsContainer.replaceChildren();
+            if (!selectedSongs.size) return;
+            const heading = document.createElement('h3');
+            heading.textContent = 'Selected songs';
+            const list = document.createElement('div');
+            list.className = 'playlist-selected-list';
+            selectedSongs.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'playlist-selected-item';
+                const title = document.createElement('span');
+                title.textContent = `${song.title} — ${song.artistName}`;
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.textContent = 'Remove';
+                remove.setAttribute('aria-label', `Remove ${song.title} from playlist`);
+                remove.addEventListener('click', () => toggleSong(song, false));
+                item.append(title, remove);
+                list.append(item);
+            });
+            selectedSongsContainer.append(heading, list);
+        }
+
+        function renderSearchResults() {
+            const query = currentQuery.toLocaleLowerCase();
+            searchResults.replaceChildren();
+            if (!query) {
+                emptyMessage(searchResults, 'Type a song, artist, or playlist name to search.');
+                return;
+            }
+
+            const matchingPlaylists = loadedPlaylists.filter(playlist =>
+                String(playlist.name || '').toLocaleLowerCase().includes(query));
+            if (!matchingSongs.length && !matchingPlaylists.length) {
+                emptyMessage(searchResults, 'No songs, artists, or playlists match your search.');
+                return;
+            }
+
+            matchingPlaylists.forEach(playlist => {
+                const result = document.createElement('article');
+                result.className = 'playlist-search-result playlist-search-playlist';
+                const details = document.createElement('span');
+                details.className = 'playlist-search-info';
+                const title = document.createElement('strong');
+                title.textContent = playlist.name;
+                const count = document.createElement('span');
+                count.textContent = `${playlist.songCount} ${playlist.songCount === 1 ? 'song' : 'songs'}`;
+                details.append(title, count);
+                const addButton = document.createElement('button');
+                addButton.type = 'button';
+                addButton.className = 'button text-button';
+                addButton.textContent = 'Add tracks';
+                addButton.addEventListener('click', () => importPlaylistSongs(playlist, addButton));
+                result.append(details, addButton);
+                searchResults.append(result);
+            });
+            matchingSongs.forEach(song => searchResults.append(songTile(song)));
+        }
+
+        async function importPlaylistSongs(playlist, button) {
+            button.disabled = true;
+            button.textContent = 'Loading…';
+            try {
+                const endpoint = new URL('/MelodyMatch/Backend/php/get_my_playlists.php', window.location.origin);
+                endpoint.searchParams.set('playlist_id', String(playlist.id));
+                const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+                const data = await response.json();
+                if (!response.ok || !data.success || !Array.isArray(data.playlists) || !data.playlists.length) {
+                    throw new Error(data.message || 'This playlist could not be loaded.');
+                }
+                const tracks = data.playlists[0].songs;
+                const availableSongs = tracks.filter(song => !selectedSongIds.has(Number(song.id)));
+                if (selectedSongIds.size + availableSongs.length > 100) {
+                    throw new Error('Adding this playlist would exceed the 100-song limit.');
+                }
+                availableSongs.forEach(song => {
+                    selectedSongIds.add(Number(song.id));
+                    selectedSongs.set(Number(song.id), song);
+                });
+                csrfToken = data.csrfToken || csrfToken;
+                document.getElementById('csrfToken').value = csrfToken;
+                playlistMessage.textContent = availableSongs.length
+                    ? `Added ${availableSongs.length} ${availableSongs.length === 1 ? 'song' : 'songs'} from “${playlist.name}”.`
+                    : 'All available tracks from this playlist are already selected.';
+                updateSelectionCount();
+                renderSearchResults();
+            } catch (error) {
+                playlistMessage.textContent = error.message || 'This playlist could not be loaded.';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Add tracks';
+            }
+        }
+
+        async function searchSongs() {
+            currentQuery = playlistSearch.value.trim();
+            const requestId = ++searchRequest;
+            matchingSongs = [];
+            if (!currentQuery) {
+                renderSearchResults();
+                return;
+            }
+            renderSearchResults();
+            try {
+                const endpoint = new URL('/MelodyMatch/Backend/php/search_playlist_songs.php', window.location.origin);
+                endpoint.searchParams.set('q', currentQuery);
+                const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+                const data = await response.json();
+                if (requestId !== searchRequest) return;
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Song search is temporarily unavailable.');
+                }
+                matchingSongs = Array.isArray(data.songs) ? data.songs : [];
+                csrfToken = data.csrfToken || csrfToken;
+                document.getElementById('csrfToken').value = csrfToken;
+                renderSearchResults();
+            } catch (error) {
+                if (requestId !== searchRequest) return;
+                console.error('Could not search playlist songs.', error);
+                emptyMessage(searchResults, error.message || 'Song search is temporarily unavailable.');
+            }
+        }
+
+        playlistSearch.addEventListener('input', () => {
+            window.clearTimeout(searchTimer);
+            searchTimer = window.setTimeout(searchSongs, 250);
+        });
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.profile) {
+                throw new Error(data.message || 'Your account could not be loaded.');
+            }
+            return data.profile;
+        }).then(profile => {
+            if (!profile) return;
+            csrfToken = profile.csrfToken || '';
+            document.getElementById('csrfToken').value = csrfToken;
+            const artist = profile.role === 'Artist';
+            const home = artist
+                ? '/MelodyMatch/Frontend/html/artist/artist_homepage.html'
+                : '/MelodyMatch/Frontend/html/listener/listener_homepage.html';
+            document.getElementById('accountRole').textContent = `${profile.role} account`;
+            document.getElementById('musicNavigation').innerHTML =
+                `<a href="${home}">‹ Back to ${artist ? 'Artist studio' : 'Discover'}</a>` +
+                '<a href="/MelodyMatch/Frontend/html/playlists.html">♫ My playlists</a>' +
+                '<a class="active" href="/MelodyMatch/Frontend/html/create_playlist.html" aria-current="page">＋ Create playlist</a>';
+            document.getElementById('cancelPlaylist').href = home;
+            document.getElementById('profileLink').href = artist
+                ? '/MelodyMatch/Frontend/html/artist/artist_profile.html'
+                : '/MelodyMatch/Frontend/html/listener/listener_profile.html';
+            document.getElementById('profileInitial').textContent =
+                Array.from(profile.artistName || profile.username || 'M')[0];
+            if (profile.profilePicture) {
+                const picture = document.getElementById('profilePicture');
+                picture.src = profile.profilePicture;
+                picture.alt = `${profile.username} profile picture`;
+                picture.hidden = false;
+                document.getElementById('profileInitial').hidden = true;
+            }
+            return fetch('/MelodyMatch/Backend/php/get_my_playlists.php', {
+                headers: { Accept: 'application/json' }
+            });
+        }).then(async response => {
+            if (!response) return;
+            const playlistData = await response.json();
+            if (!response.ok || !playlistData.success) {
+                throw new Error(playlistData.message || 'Your playlists could not be loaded.');
+            }
+            csrfToken = playlistData.csrfToken || csrfToken;
+            document.getElementById('csrfToken').value = csrfToken;
+            loadedPlaylists = Array.isArray(playlistData.playlists) ? playlistData.playlists : [];
+            renderSearchResults();
+        }).catch(error => {
+            console.error('Could not load playlist builder.', error);
+            emptyMessage(searchResults, error.message || 'Playlist songs could not be loaded.');
+        });
+
+        playlistForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            playlistMessage.textContent = '';
+            if (!csrfToken) {
+                playlistMessage.textContent = 'Your session is not ready. Refresh and try again.';
+                return;
+            }
+            if (selectedSongIds.size < 1) {
+                playlistMessage.textContent = 'Choose at least one song for your playlist.';
+                return;
+            }
+            createButton.disabled = true;
+            createButton.textContent = 'Creating…';
+            try {
+                const body = new FormData(playlistForm);
+                body.set('song_ids', JSON.stringify(Array.from(selectedSongIds)));
+                const response = await fetch('/MelodyMatch/Backend/php/create_playlist.php', {
+                    method: 'POST',
+                    body,
+                    headers: { Accept: 'application/json' }
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Your playlist could not be created.');
+                }
+                playlistMessage.textContent = result.message;
+                playlistMessage.classList.add('success');
+                const openPlaylist = document.createElement('a');
+                openPlaylist.href = `/MelodyMatch/Frontend/html/playlists.html?playlist_id=${encodeURIComponent(result.playlistId)}`;
+                openPlaylist.className = 'button text-button';
+                openPlaylist.textContent = 'View playlist';
+                playlistMessage.append(' ', openPlaylist);
+                playlistForm.reset();
+                selectedSongIds.clear();
+                selectedSongs.clear();
+                currentQuery = '';
+                matchingSongs = [];
+                searchRequest++;
+                window.clearTimeout(searchTimer);
+                renderSelectedSongs();
+                updateSelectionCount();
+                renderSearchResults();
+            } catch (error) {
+                playlistMessage.textContent = error.message || 'Your playlist could not be created.';
+                playlistMessage.classList.remove('success');
+            } finally {
+                createButton.disabled = false;
+                createButton.textContent = 'Create playlist';
+            }
+        });
+    </script>
+</body>
+
+</html>

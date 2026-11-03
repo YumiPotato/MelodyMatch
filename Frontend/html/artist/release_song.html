@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/artist-profile.css?v=20261103-1">
-    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/song-release.css?v=20261103-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/song-release.css?v=20261103-2">
 </head>
 
 <body>
@@ -69,21 +69,59 @@
                             <input id="songTitle" name="title" type="text" maxlength="150" autocomplete="off"
                                 placeholder="Give your song a name" required>
                         </div>
-                        <div class="release-field">
-                            <label for="songGenre">Genre</label>
-                            <input id="songGenre" name="genre" type="text" maxlength="100"
-                                placeholder="e.g. Indie pop" required>
+                        <fieldset class="release-field release-field-wide release-choice-field">
+                            <legend aria-describedby="releaseChoiceError">Genre
+                                <span class="optional-label">Required</span>
+                            </legend>
+                            <p class="field-help">Choose all genres that describe this track.</p>
+                            <div class="release-choice-options" id="songGenreOptions">
+                                <label><input type="checkbox" name="genreOption" value="Pop"><span>Pop</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Rock"><span>Rock</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Hip-Hop"><span>Hip-Hop</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Electronic"><span>Electronic</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Classical"><span>Classical</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Jazz"><span>Jazz</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Blues"><span>Blues</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Country"><span>Country</span></label>
+                                <label><input type="checkbox" name="genreOption" value="R&amp;B"><span>R&amp;B</span></label>
+                                <label><input type="checkbox" name="genreOption" value="Folk"><span>Folk</span></label>
+                            </div>
+                            <input id="songGenre" name="genre" type="hidden">
+                        </fieldset>
+                        <div class="release-field release-field-wide">
+                            <label for="songLanguageSearch">Language <span class="optional-label">Required</span></label>
+                            <div class="release-language-picker">
+                                <div class="selected-options" id="songLanguageSelections" aria-live="polite"></div>
+                                <input id="songLanguageSearch" type="text" autocomplete="off"
+                                    aria-autocomplete="list" aria-controls="songLanguageSuggestions"
+                                    aria-expanded="false" aria-describedby="releaseChoiceError"
+                                    placeholder="Type to search languages">
+                                <div id="songLanguageSuggestions" class="picker-suggestions" role="listbox"
+                                    hidden></div>
+                                <input id="songLanguage" name="language" type="hidden">
+                            </div>
                         </div>
-                        <div class="release-field">
-                            <label for="songLanguage">Language</label>
-                            <input id="songLanguage" name="language" type="text" maxlength="50"
-                                placeholder="e.g. English" required>
-                        </div>
-                        <div class="release-field">
-                            <label for="songMood">Mood <span class="optional-label">Optional</span></label>
-                            <input id="songMood" name="mood" type="text" maxlength="100"
-                                placeholder="e.g. Relaxed, Dreamy">
-                        </div>
+                        <fieldset class="release-field release-field-wide release-choice-field">
+                            <legend>Mood <span class="optional-label">Optional</span></legend>
+                            <p class="field-help">Choose any moods that fit your song.</p>
+                            <div class="release-choice-options" id="songMoodOptions">
+                                <label><input type="checkbox" name="moodOption" value="Happy"><span>Happy</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Sad"><span>Sad</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Relaxed"><span>Relaxed</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Energetic"><span>Energetic</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Romantic"><span>Romantic</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Angry"><span>Angry</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Dreamy"><span>Dreamy</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Nostalgic"><span>Nostalgic</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Focused"><span>Focused</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Lonely"><span>Lonely</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Excited"><span>Excited</span></label>
+                                <label><input type="checkbox" name="moodOption" value="Calm"><span>Calm</span></label>
+                            </div>
+                            <input id="songMood" name="mood" type="hidden">
+                        </fieldset>
+                        <p class="field-help release-choice-error" id="releaseChoiceError" role="status"
+                            aria-live="polite"></p>
                         <div class="release-field release-field-wide">
                             <label for="songDescription">Description <span class="optional-label">Optional</span></label>
                             <textarea id="songDescription" name="description" rows="4" maxlength="2000"
@@ -169,11 +207,192 @@
         const releaseSubmit = document.getElementById('releaseSubmit');
         const audioFile = document.getElementById('audioFile');
         const coverArt = document.getElementById('coverArt');
+        const genreOptions = document.getElementById('songGenreOptions');
+        const moodOptions = document.getElementById('songMoodOptions');
+        const languagePicker = document.querySelector('.release-language-picker');
+        const languageSearch = document.getElementById('songLanguageSearch');
+        const languageSelections = document.getElementById('songLanguageSelections');
+        const languageSuggestions = document.getElementById('songLanguageSuggestions');
+        const languageValue = document.getElementById('songLanguage');
+        const choiceError = document.getElementById('releaseChoiceError');
         const maxAudioSize = 30 * 1024 * 1024;
         const maxCoverSize = 5 * 1024 * 1024;
         let csrfToken = '';
         let artistGenre = '';
         let artistLanguage = '';
+        const genreLimit = 100;
+        const languageLimit = 50;
+        const moodLimit = 100;
+        const languageCodes = 'aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu'.split(' ');
+        const displayLanguageName = new Intl.DisplayNames(['en'], { type: 'language' });
+        const languageNames = [...new Set(languageCodes.map(code =>
+            code === 'tw' ? 'Twi' : displayLanguageName.of(code)
+        ))].filter(Boolean).sort();
+        const selectedLanguages = [];
+        let visibleLanguages = [];
+        let activeLanguageIndex = -1;
+
+        function selectedValues(name) {
+            return Array.from(releaseForm.querySelectorAll(`input[name="${name}"]:checked`),
+                checkbox => checkbox.value);
+        }
+
+        function updateChoiceValue(name, inputId, limit, label) {
+            const value = selectedValues(name).join(', ');
+            document.getElementById(inputId).value = value;
+            if (value.length > limit) {
+                choiceError.textContent = `${label} selections must fit within ${limit} characters.`;
+                return false;
+            }
+            choiceError.textContent = '';
+            return true;
+        }
+
+        function setGenreSelections(value) {
+            const values = value.split(',').map(item => item.trim()).filter(Boolean);
+            values.forEach(item => {
+                const exists = Array.from(genreOptions.querySelectorAll('input[name="genreOption"]'))
+                    .some(input => input.value.toLocaleLowerCase() === item.toLocaleLowerCase());
+                if (!exists) {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    const text = document.createElement('span');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'genreOption';
+                    checkbox.value = item;
+                    text.textContent = item;
+                    label.append(checkbox, text);
+                    genreOptions.append(label);
+                    checkbox.addEventListener('change', () =>
+                        updateChoiceValue('genreOption', 'songGenre', genreLimit, 'Genre'));
+                }
+            });
+            Array.from(genreOptions.querySelectorAll('input[name="genreOption"]')).forEach(input => {
+                input.checked = values.some(item =>
+                    item.toLocaleLowerCase() === input.value.toLocaleLowerCase());
+            });
+            updateChoiceValue('genreOption', 'songGenre', genreLimit, 'Genre');
+        }
+
+        function renderLanguages() {
+            languageSelections.replaceChildren();
+            selectedLanguages.forEach((value, index) => {
+                if (index > 0) languageSelections.append(document.createTextNode(', '));
+                const selectedOption = document.createElement('span');
+                selectedOption.className = 'selected-option';
+                selectedOption.append(document.createTextNode(value));
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'remove-option';
+                removeButton.setAttribute('aria-label', `Remove ${value}`);
+                removeButton.textContent = '×';
+                removeButton.addEventListener('click', () => {
+                    selectedLanguages.splice(index, 1);
+                    renderLanguages();
+                });
+                selectedOption.append(removeButton);
+                languageSelections.append(selectedOption);
+            });
+            languageValue.value = selectedLanguages.join(', ');
+            if (languageValue.value.length > languageLimit) {
+                choiceError.textContent = `Language selections must fit within ${languageLimit} characters.`;
+            } else {
+                choiceError.textContent = '';
+            }
+        }
+
+        function closeLanguageSuggestions() {
+            languageSuggestions.replaceChildren();
+            languageSuggestions.hidden = true;
+            languageSearch.setAttribute('aria-expanded', 'false');
+            languageSearch.removeAttribute('aria-activedescendant');
+            activeLanguageIndex = -1;
+        }
+
+        function selectLanguage(value) {
+            if (!selectedLanguages.some(item => item.toLocaleLowerCase() === value.toLocaleLowerCase())) {
+                selectedLanguages.push(value);
+                renderLanguages();
+            }
+            languageSearch.value = '';
+            closeLanguageSuggestions();
+        }
+
+        function setLanguageSelections(value) {
+            selectedLanguages.splice(0, selectedLanguages.length,
+                ...value.split(',').map(item => item.trim()).filter(Boolean));
+            renderLanguages();
+        }
+
+        function showLanguageSuggestions(query) {
+            const normalizedQuery = query.trim().toLocaleLowerCase();
+            const exactMatch = languageNames.find(language =>
+                language.toLocaleLowerCase() === normalizedQuery);
+            if (normalizedQuery.length > 2 && exactMatch) {
+                selectLanguage(exactMatch);
+                return;
+            }
+            visibleLanguages = languageNames.filter(language =>
+                language.toLocaleLowerCase().startsWith(normalizedQuery) &&
+                !selectedLanguages.some(selected =>
+                    selected.toLocaleLowerCase() === language.toLocaleLowerCase())
+            ).slice(0, 10);
+            activeLanguageIndex = -1;
+            languageSuggestions.replaceChildren();
+            if (!normalizedQuery || !visibleLanguages.length) {
+                closeLanguageSuggestions();
+                return;
+            }
+            visibleLanguages.forEach((language, index) => {
+                const suggestion = document.createElement('button');
+                suggestion.type = 'button';
+                suggestion.className = 'picker-suggestion';
+                suggestion.id = `songLanguageSuggestions-${index}`;
+                suggestion.setAttribute('role', 'option');
+                suggestion.setAttribute('aria-selected', 'false');
+                suggestion.textContent = language;
+                suggestion.addEventListener('pointerdown', event => event.preventDefault());
+                suggestion.addEventListener('click', () => selectLanguage(language));
+                languageSuggestions.append(suggestion);
+            });
+            languageSuggestions.hidden = false;
+            languageSearch.setAttribute('aria-expanded', 'true');
+        }
+
+        genreOptions.addEventListener('change', () =>
+            updateChoiceValue('genreOption', 'songGenre', genreLimit, 'Genre'));
+        moodOptions.addEventListener('change', () =>
+            updateChoiceValue('moodOption', 'songMood', moodLimit, 'Mood'));
+        languageSearch.addEventListener('input', () => showLanguageSuggestions(languageSearch.value));
+        languageSearch.addEventListener('keydown', event => {
+            if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && visibleLanguages.length) {
+                event.preventDefault();
+                activeLanguageIndex = event.key === 'ArrowDown'
+                    ? (activeLanguageIndex + 1) % visibleLanguages.length
+                    : activeLanguageIndex <= 0 ? visibleLanguages.length - 1 : activeLanguageIndex - 1;
+                Array.from(languageSuggestions.children).forEach((suggestion, index) => {
+                    const isActive = index === activeLanguageIndex;
+                    suggestion.setAttribute('aria-selected', String(isActive));
+                    if (isActive) languageSearch.setAttribute('aria-activedescendant', suggestion.id);
+                });
+            } else if (event.key === 'Enter') {
+                const exactMatch = languageNames.find(language =>
+                    language.toLocaleLowerCase() === languageSearch.value.trim().toLocaleLowerCase());
+                const selectedLanguage = activeLanguageIndex >= 0
+                    ? visibleLanguages[activeLanguageIndex]
+                    : exactMatch;
+                if (!selectedLanguage) return;
+                event.preventDefault();
+                selectLanguage(selectedLanguage);
+            } else if (event.key === 'Escape') {
+                closeLanguageSuggestions();
+            }
+        });
+        languagePicker.addEventListener('focusout', event => {
+            if (!languagePicker.contains(event.relatedTarget)) {
+                window.setTimeout(closeLanguageSuggestions, 150);
+            }
+        });
 
         document.getElementById('releaseDate').value =
             new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -209,8 +428,8 @@
             artistGenre = profile.genre || '';
             artistLanguage = profile.language || '';
             document.getElementById('csrfToken').value = csrfToken;
-            document.getElementById('songGenre').value = artistGenre;
-            document.getElementById('songLanguage').value = artistLanguage;
+            setGenreSelections(artistGenre);
+            setLanguageSelections(artistLanguage);
             document.getElementById('profileInitial').textContent =
                 Array.from(profile.artistName || profile.username)[0] || 'A';
 
@@ -238,6 +457,27 @@
                 releaseMessage.classList.add('error');
                 return;
             }
+            if (!selectedValues('genreOption').length) {
+                choiceError.textContent = 'Choose at least one genre for your release.';
+                genreOptions.querySelector('input[name="genreOption"]').focus();
+                return;
+            }
+            if (!updateChoiceValue('genreOption', 'songGenre', genreLimit, 'Genre')) {
+                genreOptions.querySelector('input[name="genreOption"]:checked').focus();
+                return;
+            }
+            if (!languageValue.value) {
+                choiceError.textContent = 'Choose at least one language for your release.';
+                languageSearch.focus();
+                return;
+            }
+            if (languageValue.value.length > languageLimit) {
+                choiceError.textContent = `Language selections must fit within ${languageLimit} characters.`;
+                languageSearch.focus();
+                return;
+            }
+            updateChoiceValue('moodOption', 'songMood', moodLimit, 'Mood');
+            if (document.getElementById('songMood').value.length > moodLimit) return;
             if (!audioFile.files.length || audioFile.files[0].size > maxAudioSize) {
                 releaseMessage.textContent = 'Choose an audio file smaller than 30 MB.';
                 releaseMessage.classList.add('error');
@@ -268,8 +508,8 @@
                 document.getElementById('csrfToken').value = csrfToken;
                 document.getElementById('releaseDate').value =
                     new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-                document.getElementById('songGenre').value = artistGenre;
-                document.getElementById('songLanguage').value = artistLanguage;
+                setGenreSelections(artistGenre);
+                setLanguageSelections(artistLanguage);
                 document.getElementById('audioFileName').textContent = 'No audio file selected';
                 document.getElementById('coverFileName').textContent = 'No cover art selected';
             } catch (error) {

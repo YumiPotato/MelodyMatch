@@ -33,7 +33,7 @@
         state.currentIndex = nextIndex;
         state.currentSongId = song.id;
         document.getElementById('playerTitle').textContent = song.title;
-        document.getElementById('playerArtist').textContent = `${song.artistName} · ${song.genre}`;
+        document.getElementById('playerArtist').textContent = song.artistName;
         const cover = document.getElementById('playerCover');
         if (song.coverUrl) {
             cover.src = song.coverUrl;
@@ -120,6 +120,15 @@
             return;
         }
         playAt(index, true);
+    };
+
+    window.updateMelodyMatchPlayerSong = (songId, updates) => {
+        const song = state.songs.find(item => String(item.id) === String(songId));
+        if (!song) return;
+        Object.assign(song, updates);
+        if (String(state.currentSongId) === String(songId)) {
+            updateReactionButtons();
+        }
     };
 
     document.getElementById('previousSong').addEventListener('click', () => {

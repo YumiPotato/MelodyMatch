@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/artist-profile.css?v=20261103-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/music-library.css?v=20261104-1">
 </head>
 
 <body>
@@ -53,9 +54,18 @@
                     <h3 id="publicReleasesHeading">Releases</h3>
                     <span class="public-release-count" id="publicReleaseCount"></span>
                 </div>
-                <div class="public-song-list" id="publicSongList" aria-live="polite">
+                <div class="song-sort-control">
+                    <span>Sort releases</span>
+                    <div id="publicSongSort" role="group" aria-label="Sort artist releases">
+                        <button type="button" data-sort="popular" aria-pressed="false">Most Popular</button>
+                        <button type="button" data-sort="oldest" aria-pressed="false">Oldest</button>
+                        <button type="button" data-sort="newest" aria-pressed="true">Newest</button>
+                    </div>
+                </div>
+                <div class="public-song-list" id="publicSongList" role="list" aria-live="polite">
                     <p class="empty-state">Loading artist releases…</p>
                 </div>
+                <p class="public-song-message" id="publicSongMessage" role="status" aria-live="polite"></p>
             </section>
         </main>
     </div>
@@ -95,56 +105,170 @@
             }
         }
 
+        let publicSongs = [];
+        let publicSongSort = 'newest';
+        let publicCsrfToken = '';
+        const publicSongMessage = document.getElementById('publicSongMessage');
+
         function buildSongCard(song) {
             const article = document.createElement('article');
-            article.className = 'public-song-card';
+            article.className = 'public-song-row';
+            article.setAttribute('role', 'listitem');
+            const cover = document.createElement('div');
+            cover.className = 'public-song-cover';
             if (song.coverUrl) {
-                const cover = document.createElement('img');
-                cover.className = 'public-song-cover';
-                cover.src = song.coverUrl;
-                cover.alt = `${song.title} cover art`;
-                article.append(cover);
+                const image = document.createElement('img');
+                image.src = song.coverUrl;
+                image.alt = '';
+                cover.append(image);
             } else {
-                const cover = document.createElement('div');
-                cover.className = 'public-song-cover public-song-cover-placeholder';
-                cover.setAttribute('aria-hidden', 'true');
                 cover.textContent = '♫';
-                article.append(cover);
+                cover.setAttribute('aria-hidden', 'true');
             }
 
             const details = document.createElement('div');
             details.className = 'public-song-details';
             const heading = document.createElement('h2');
             heading.textContent = song.title;
-            const metadata = document.createElement('p');
             const releaseDate = new Date(`${song.releaseDate}T00:00:00`);
-            metadata.textContent = [
-                song.genre,
-                song.language,
-                song.mood,
-                Number.isNaN(releaseDate.getTime())
+            const metadata = document.createElement('div');
+            metadata.className = 'public-song-metadata';
+            [
+                ['Genre', song.genre],
+                ['Mood', song.mood],
+                ['Language', song.language],
+                ['Released', Number.isNaN(releaseDate.getTime())
                     ? song.releaseDate
-                    : releaseDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-            ].filter(Boolean).join(' · ');
-            details.append(heading, metadata);
-            if (song.description) {
-                const description = document.createElement('p');
-                description.className = 'public-song-description';
-                description.textContent = song.description;
-                details.append(description);
-            }
-            if (song.audioUrl) {
-                const player = document.createElement('audio');
-                player.controls = true;
-                player.preload = 'none';
-                player.src = song.audioUrl;
-                player.setAttribute('aria-label', `Play ${song.title}`);
-                details.append(player);
-            }
-            article.append(details);
+                    : releaseDate.toLocaleDateString()]
+            ].filter(([, value]) => value).forEach(([label, value]) => {
+                const line = document.createElement('p');
+                const name = document.createElement('strong');
+                name.textContent = `${label}: `;
+                line.append(name, document.createTextNode(value));
+                metadata.append(line);
+            });
+            const stats = document.createElement('p');
+            stats.className = 'public-song-stats';
+            stats.textContent = `${song.views} views · ${song.likes} likes · ${song.saves} saves`;
+            details.append(heading, metadata, stats);
+
+            const actions = document.createElement('div');
+            actions.className = 'public-song-actions';
+            const playButton = document.createElement('button');
+            playButton.type = 'button';
+            playButton.className = 'public-song-play';
+            playButton.textContent = '▶ Play';
+            playButton.disabled = !song.audioUrl;
+            playButton.setAttribute('aria-label', `Play ${song.title}`);
+            playButton.addEventListener('click', () => {
+                window.openMelodyMatchPlayer(publicSongs, song.id, publicCsrfToken);
+            });
+            const likeButton = document.createElement('button');
+            likeButton.type = 'button';
+            likeButton.className = 'public-song-reaction';
+            likeButton.disabled = !publicCsrfToken;
+            const saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'public-song-reaction';
+            saveButton.disabled = !publicCsrfToken;
+            const updateButtons = () => {
+                likeButton.textContent = `${song.liked ? '♥ Liked' : '♡ Like'} · ${song.likes}`;
+                likeButton.setAttribute('aria-pressed', String(Boolean(song.liked)));
+                saveButton.textContent = `${song.saved ? '♥ Saved' : '♡ Save'} · ${song.saves}`;
+                saveButton.setAttribute('aria-pressed', String(Boolean(song.saved)));
+                stats.textContent = `${song.views} views · ${song.likes} likes · ${song.saves} saves`;
+            };
+            likeButton.addEventListener('click', () =>
+                togglePublicReaction(song, 'like_song.php', 'liked', likeButton));
+            saveButton.addEventListener('click', () =>
+                togglePublicReaction(song, 'save_song.php', 'saved', saveButton));
+            updateButtons();
+            const detailsLink = document.createElement('a');
+            detailsLink.href = `/MelodyMatch/Frontend/html/song_detail.html?song_id=${encodeURIComponent(song.id)}`;
+            detailsLink.textContent = 'Song details';
+            actions.append(playButton, likeButton, saveButton, detailsLink);
+            article.append(cover, details, actions);
             return article;
         }
 
+        async function togglePublicReaction(song, endpoint, reaction, button) {
+            if (!publicCsrfToken) {
+                publicSongMessage.textContent = 'Sign in to like or save songs.';
+                return;
+            }
+            button.disabled = true;
+            try {
+                const account = await window.MelodyMatchMusicPlayer.syncAccount();
+                if (!account) throw new Error('Sign in again to like or save songs.');
+                const response = await fetch(`/MelodyMatch/Backend/php/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        song_id: String(song.id),
+                        csrf_token: publicCsrfToken
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'This song could not be updated.');
+                }
+                song[reaction] = result[reaction];
+                song[reaction === 'liked' ? 'likes' : 'saves'] =
+                    result[reaction === 'liked' ? 'likes' : 'saves'];
+                renderPublicSongs();
+                if (typeof window.updateMelodyMatchPlayerSong === 'function') {
+                    window.updateMelodyMatchPlayerSong(song.id, {
+                        [reaction]: song[reaction],
+                        [reaction === 'liked' ? 'likes' : 'saves']: song[reaction === 'liked' ? 'likes' : 'saves']
+                    });
+                }
+                publicSongMessage.textContent = result.message;
+            } catch (error) {
+                console.error('Could not update public artist song reaction.', error);
+                publicSongMessage.textContent = error.message || 'This song could not be updated.';
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function renderPublicSongs() {
+            const sort = publicSongSort;
+            const songs = [...publicSongs];
+            if (sort === 'popular') {
+                songs.sort((first, second) =>
+                    (second.views + second.likes * 2 + second.saves) -
+                    (first.views + first.likes * 2 + first.saves));
+            } else {
+                songs.sort((first, second) => {
+                    const dateDifference = new Date(`${first.releaseDate}T00:00:00`) -
+                        new Date(`${second.releaseDate}T00:00:00`);
+                    const idDifference = first.id - second.id;
+                    return sort === 'oldest' ? dateDifference || idDifference : -dateDifference || -idDifference;
+                });
+            }
+            songList.replaceChildren();
+            if (songs.length) {
+                songs.forEach(song => songList.append(buildSongCard(song)));
+            } else {
+                const empty = document.createElement('p');
+                empty.className = 'empty-state';
+                empty.textContent = 'No songs have been released yet.';
+                songList.append(empty);
+            }
+        }
+
+        document.querySelectorAll('#publicSongSort button').forEach(button => {
+            button.addEventListener('click', () => {
+                publicSongSort = button.dataset.sort;
+                document.querySelectorAll('#publicSongSort button').forEach(option => {
+                    option.setAttribute('aria-pressed', String(option === button));
+                });
+                renderPublicSongs();
+            });
+        });
         const artistId = new URLSearchParams(window.location.search).get('artist_id');
         const songList = document.getElementById('publicSongList');
         if (!artistId || !/^[1-9]\d*$/.test(artistId)) {
@@ -165,6 +289,7 @@
                 }
 
                 const artist = data.profile;
+                publicCsrfToken = artist.csrfToken || '';
                 const displayName = artist.artistName || artist.username;
                 document.title = `${displayName} | MelodyMatch`;
                 document.getElementById('publicArtistName').textContent = displayName;
@@ -186,18 +311,10 @@
                 addSocialLink(socialLinks, 'YouTube', artist.youtubeUrl);
                 addSocialLink(socialLinks, 'TikTok', artist.tiktokUrl);
 
-                const songs = Array.isArray(artist.songs) ? artist.songs : [];
+                publicSongs = Array.isArray(artist.songs) ? artist.songs : [];
                 document.getElementById('publicReleaseCount').textContent =
-                    `${songs.length} ${songs.length === 1 ? 'release' : 'releases'}`;
-                songList.replaceChildren();
-                if (songs.length) {
-                    songs.forEach(song => songList.append(buildSongCard(song)));
-                } else {
-                    const empty = document.createElement('p');
-                    empty.className = 'empty-state';
-                    empty.textContent = 'No songs have been released yet.';
-                    songList.append(empty);
-                }
+                    `${publicSongs.length} ${publicSongs.length === 1 ? 'release' : 'releases'}`;
+                renderPublicSongs();
             }).catch(error => {
                 console.error('Could not load public artist profile.', error);
                 document.getElementById('publicArtistName').textContent = 'Artist profile unavailable';

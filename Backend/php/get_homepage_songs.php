@@ -24,6 +24,10 @@ $role = isset($_SESSION['role']) && is_string($_SESSION['role']) ? $_SESSION['ro
 if (empty($_SESSION['user_id']) || !in_array($role, ['Listener', 'Artist'], true)) {
     respond(401, false, 'Sign in to browse released songs.');
 }
+$sort = $_GET['sort'] ?? 'recent';
+if (!is_string($sort) || !in_array($sort, ['recent', 'popular'], true)) {
+    respond(400, false, 'Choose a valid song sort order.');
+}
 
 require_once __DIR__ . '/database_connection.php';
 if (!$dbConnect) {
@@ -36,6 +40,10 @@ if (!mysqli_set_charset($dbConnect, 'utf8mb4')) {
 }
 
 $userId = (int) $_SESSION['user_id'];
+$orderBy = $sort === 'popular'
+    ? 'COALESCE(s.likes_count, 0) + COALESCE(s.saves_count, 0) DESC,
+       s.likes_count DESC, s.saves_count DESC, s.release_date DESC, s.songID DESC'
+    : 's.release_date DESC, s.songID DESC';
 $statement = mysqli_prepare(
     $dbConnect,
     "SELECT s.songID, s.title, s.genre, s.language, s.mood, s.release_date, s.audio_path, s.cover_path,
@@ -50,7 +58,7 @@ $statement = mysqli_prepare(
        AND LOWER(u.status) = 'active'
      GROUP BY s.songID, s.title, s.genre, s.language, s.mood, s.release_date, s.audio_path, s.cover_path,
               a.artist_name, u.username, s.saves_count, s.likes_count
-     ORDER BY s.release_date DESC, s.songID DESC
+     ORDER BY $orderBy
      LIMIT 30"
 );
 if (!$statement || !mysqli_stmt_bind_param($statement, 'ii', $userId, $userId) ||

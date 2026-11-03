@@ -34,6 +34,172 @@
     grid-column: 1 / -1;
 }
 
+.release-choice-field {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.release-choice-field legend {
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.release-choice-field > .field-help {
+    display: block;
+    margin: 0 0 9px;
+}
+
+.release-choice-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.release-field .release-choice-options label {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    transition: border-color .18s ease, background .18s ease;
+}
+
+.release-field .release-choice-options label:hover,
+.release-field .release-choice-options label:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--light-pink);
+}
+
+.release-field .release-choice-options label:has(input:checked) {
+    color: var(--primary-hover);
+    font-weight: 600;
+}
+
+.release-field .release-choice-options label:has(input:focus-visible) {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.release-field .release-choice-options input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.release-choice-options span {
+    overflow-wrap: anywhere;
+}
+
+.release-language-picker {
+    position: relative;
+    display: grid;
+    gap: 5px;
+    min-height: 46px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+}
+
+.release-language-picker:focus-within {
+    border-color: var(--primary);
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.release-language-picker .selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.release-language-picker .selected-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    background: var(--light-pink);
+}
+
+.release-language-picker .remove-option {
+    border: 0;
+    background: transparent;
+    color: var(--primary-hover);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.release-language-picker input[type="text"] {
+    width: 100%;
+    min-height: 28px;
+    padding: 4px 2px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+}
+
+.release-language-picker .picker-suggestions {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+    box-shadow: 0 8px 20px rgba(80, 35, 57, .14);
+}
+
+.release-language-picker .picker-suggestion {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+}
+
+.release-language-picker .picker-suggestion:hover,
+.release-language-picker .picker-suggestion[aria-selected="true"] {
+    background: var(--light-pink);
+}
+
+.release-choice-error {
+    grid-column: 1 / -1;
+    min-height: 0;
+    margin: 0;
+    color: #b4234b;
+}
+
 .release-field label {
     font-size: 13px;
     font-weight: 600;
@@ -51,6 +217,23 @@
     color: var(--text);
     font: inherit;
     font-size: 13px;
+}
+
+.release-field .release-choice-options input {
+    width: 1px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.release-field .release-choice-options label {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.release-field .release-choice-options label:has(input:checked) {
+    font-weight: 600;
 }
 
 .release-field textarea {
@@ -210,6 +393,10 @@
 
     .release-field-wide {
         grid-column: auto;
+    }
+
+    .release-choice-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .release-actions {

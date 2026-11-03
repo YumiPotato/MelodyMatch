@@ -857,3 +857,167 @@ input {
     background: var(--light-pink);
     color: var(--primary-hover)
 }
+
+.homepage-search-results {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    max-height: 320px;
+    overflow-y: auto;
+    margin: -16px 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: 0 12px 30px var(--shadow);
+}
+
+.homepage-search-results[hidden] {
+    display: none;
+}
+
+.homepage-search-result {
+    display: grid;
+    gap: 2px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+}
+
+.homepage-search-result:last-child {
+    border-bottom: 0;
+}
+
+.homepage-search-result:hover,
+.homepage-search-result:focus-visible {
+    background: var(--light-pink);
+    outline: 0;
+}
+
+.homepage-search-result span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.homepage-search-results .release-empty {
+    padding: 12px 14px;
+}
+
+.explore-music-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.explore-music-card {
+    min-width: 0;
+    padding: 14px;
+}
+
+.explore-music-cover {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: 12px;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--light-pink);
+    color: var(--primary);
+    font-size: 42px;
+}
+
+.explore-music-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.explore-music-card h4 {
+    overflow-wrap: anywhere;
+}
+
+.explore-music-card h4 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.explore-music-card h4 a:hover {
+    color: var(--primary);
+}
+
+.explore-music-card .explore-music-tags {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.playlist-card .explore-music-cover {
+    background: linear-gradient(135deg, #f8bbd8, #e83e8c);
+    color: #fff;
+}
+
+.genre-mix-card .explore-music-cover {
+    background: linear-gradient(135deg, #593449, #ff6fae);
+}
+
+.playlist-empty {
+    grid-column: 1 / -1;
+}
+
+.discover-artist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.discover-artist-card {
+    display: grid;
+    justify-items: start;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--text);
+    text-decoration: none;
+}
+
+.discover-artist-card:hover {
+    border-color: var(--primary);
+}
+
+.discover-artist-avatar {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 6px;
+    overflow: hidden;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--light-pink);
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.discover-artist-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.discover-artist-card span:not(.discover-artist-avatar) {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+@media(max-width: 900px) {
+    .explore-music-grid,
+    .discover-artist-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media(max-width: 600px) {
+    .explore-music-grid,
+    .discover-artist-grid {
+        grid-template-columns: 1fr;
+    }
+}

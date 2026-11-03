@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playlists | MelodyMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/music-library.css?v=20261104-1">
+</head>
+
+<body>
+    <div class="page-shell">
+        <aside class="sidebar">
+            <div class="logo" aria-label="MelodyMatch home">
+                <div class="logo-mark" aria-hidden="true"><span class="mark-wave">♪</span></div>
+                <div class="logo-text">Melody<span>Match</span></div>
+            </div>
+            <nav aria-label="Music navigation" id="musicNavigation">
+                <a href="/MelodyMatch/Frontend/html/register.html">♫ MelodyMatch</a>
+            </nav>
+            <div class="profile-sidebar-note"><span class="profile-status-dot" aria-hidden="true"></span>
+                <span id="accountRole">Music account</span>
+            </div>
+            <div class="auth-actions">
+                <a class="nav-btn" href="/MelodyMatch/Backend/php/logout.php">Sign out</a>
+            </div>
+        </aside>
+
+        <main class="main-content profile-content">
+            <header class="topbar">
+                <div class="profile-breadcrumb" id="pageBreadcrumb">MelodyMatch <span aria-hidden="true">/</span> My playlists</div>
+                <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch colour theme">🌙 Dark</button>
+                <a class="profile-pill" id="profileLink" href="#" aria-label="View profile">
+                    <span id="profileInitial" aria-hidden="true">M</span>
+                    <img id="profilePicture" alt="" hidden>
+                </a>
+            </header>
+
+            <section class="profile-heading">
+                <div>
+                    <p class="eyebrow">YOUR MUSIC COLLECTION</p>
+                    <h1 id="pageTitle">My playlists</h1>
+                    <p id="pageDescription">Your playlists, all in one place.</p>
+                </div>
+                <a class="button primary" href="/MelodyMatch/Frontend/html/create_playlist.html">＋ Create playlist</a>
+            </section>
+
+            <p class="playlist-detail-message" id="playlistMessage" role="status" aria-live="polite"></p>
+            <section class="playlist-library-grid" id="playlistLibrary" aria-label="Your playlists" aria-live="polite">
+                <p class="empty-state">Loading your playlists…</p>
+            </section>
+            <section class="playlist-songs-list" id="playlistSongs" aria-label="Playlist songs" hidden></section>
+        </main>
+    </div>
+
+    <script src="/MelodyMatch/Frontend/js/music-player.js"></script>
+    <script src="/MelodyMatch/Frontend/js/app-navigation.js"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const playlistLibrary = document.getElementById('playlistLibrary');
+        const playlistSongs = document.getElementById('playlistSongs');
+        const playlistMessage = document.getElementById('playlistMessage');
+        const requestedPlaylistId = new URLSearchParams(window.location.search).get('playlist_id');
+        let csrfToken = '';
+        let accountProfile = null;
+        let playlists = [];
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+        applyTheme(localStorage.getItem('melodyMatchTheme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('melodyMatchTheme', theme);
+            applyTheme(theme);
+        });
+
+        function showEmpty(container, message) {
+            const empty = document.createElement('p');
+            empty.className = 'empty-state';
+            empty.textContent = message;
+            container.replaceChildren(empty);
+        }
+
+        function renderPlaylistLibrary() {
+            playlistSongs.hidden = true;
+            playlistLibrary.hidden = false;
+            playlistLibrary.replaceChildren();
+            if (!playlists.length) {
+                const empty = document.createElement('p');
+                empty.className = 'empty-state';
+                empty.textContent = 'You have not created a playlist yet.';
+                const createLink = document.createElement('a');
+                createLink.className = 'button primary';
+                createLink.href = '/MelodyMatch/Frontend/html/create_playlist.html';
+                createLink.textContent = 'Create your first playlist';
+                playlistLibrary.append(empty, createLink);
+                return;
+            }
+            playlists.forEach(playlist => {
+                const card = document.createElement('a');
+                card.className = 'playlist-library-card';
+                card.href = `/MelodyMatch/Frontend/html/playlists.html?playlist_id=${encodeURIComponent(playlist.id)}`;
+                const title = document.createElement('strong');
+                title.textContent = playlist.name;
+                const count = document.createElement('span');
+                count.textContent = `${playlist.songCount} ${playlist.songCount === 1 ? 'song' : 'songs'}`;
+                card.append(title, count);
+                playlistLibrary.append(card);
+            });
+        }
+
+        function updateReactionButton(button, song, reaction) {
+            const liked = reaction === 'liked';
+            const active = Boolean(song[reaction]);
+            const count = liked ? song.likes : song.saves;
+            button.textContent = `${active ? (liked ? '♥ Liked' : '♥ Saved') : (liked ? '♡ Like' : '♡ Save')} · ${count}`;
+            button.setAttribute('aria-pressed', String(active));
+        }
+
+        async function toggleReaction(song, button, reaction) {
+            if (!csrfToken || !accountProfile) {
+                playlistMessage.textContent = 'Sign in again to like or save songs.';
+                return;
+            }
+            button.disabled = true;
+            try {
+                const currentProfile = await window.MelodyMatchMusicPlayer.syncAccount();
+                if (!currentProfile || String(currentProfile.id) !== String(accountProfile.id)) {
+                    throw new Error('Your signed-in account changed. Please refresh the page.');
+                }
+                const endpoint = reaction === 'liked' ? 'like_song.php' : 'save_song.php';
+                const response = await fetch(`/MelodyMatch/Backend/php/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ song_id: String(song.id), csrf_token: csrfToken })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'This song could not be updated.');
+                }
+                song[reaction] = result[reaction];
+                song[reaction === 'liked' ? 'likes' : 'saves'] = result[reaction === 'liked' ? 'likes' : 'saves'];
+                updateReactionButton(button, song, reaction);
+                if (typeof window.updateMelodyMatchPlayerSong === 'function') {
+                    window.updateMelodyMatchPlayerSong(song.id, {
+                        [reaction]: song[reaction],
+                        [reaction === 'liked' ? 'likes' : 'saves']: song[reaction === 'liked' ? 'likes' : 'saves']
+                    });
+                }
+                playlistMessage.textContent = result.message;
+            } catch (error) {
+                console.error('Could not update playlist song reaction.', error);
+                playlistMessage.textContent = error.message || 'This song could not be updated.';
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function renderPlaylistSongs(playlist) {
+            playlistLibrary.hidden = true;
+            playlistSongs.hidden = false;
+            playlistSongs.replaceChildren();
+
+            const heading = document.createElement('div');
+            heading.className = 'section-title';
+            const headingInfo = document.createElement('div');
+            const backLink = document.createElement('a');
+            backLink.href = '/MelodyMatch/Frontend/html/playlists.html';
+            backLink.textContent = '‹ All playlists';
+            const title = document.createElement('h2');
+            title.textContent = playlist.name;
+            const description = document.createElement('p');
+            description.className = 'card-description';
+            description.textContent = playlist.description || `${playlist.songs.length} ${playlist.songs.length === 1 ? 'song' : 'songs'}`;
+            headingInfo.append(backLink, title, description);
+            heading.append(headingInfo);
+            playlistSongs.append(heading);
+
+            if (!playlist.songs.length) {
+                const empty = document.createElement('p');
+                empty.className = 'empty-state';
+                empty.textContent = 'This playlist has no playable songs right now.';
+                playlistSongs.append(empty);
+                return;
+            }
+            playlist.songs.forEach(song => {
+                const row = document.createElement('article');
+                row.className = 'playlist-song-row';
+                const cover = document.createElement('span');
+                cover.className = 'playlist-row-cover';
+                if (song.coverUrl) {
+                    const image = document.createElement('img');
+                    image.src = song.coverUrl;
+                    image.alt = '';
+                    cover.append(image);
+                } else {
+                    cover.textContent = '♫';
+                    cover.setAttribute('aria-hidden', 'true');
+                }
+                const titleText = document.createElement('strong');
+                titleText.textContent = song.title;
+                const actions = document.createElement('div');
+                actions.className = 'playlist-row-actions';
+                const playButton = document.createElement('button');
+                playButton.type = 'button';
+                playButton.textContent = '▶ Play';
+                playButton.setAttribute('aria-label', `Play ${song.title}`);
+                playButton.addEventListener('click', () => {
+                    window.openMelodyMatchPlayer(playlist.songs, song.id, csrfToken);
+                });
+                const likeButton = document.createElement('button');
+                likeButton.type = 'button';
+                updateReactionButton(likeButton, song, 'liked');
+                likeButton.addEventListener('click', () => toggleReaction(song, likeButton, 'liked'));
+                const saveButton = document.createElement('button');
+                saveButton.type = 'button';
+                updateReactionButton(saveButton, song, 'saved');
+                saveButton.addEventListener('click', () => toggleReaction(song, saveButton, 'saved'));
+                actions.append(playButton, likeButton, saveButton);
+                row.append(cover, titleText, actions);
+                playlistSongs.append(row);
+            });
+        }
+
+        fetch('/MelodyMatch/Backend/php/get_account_profile.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            if (response.status === 401) {
+                window.location.replace('/MelodyMatch/Frontend/html/login.html');
+                return null;
+            }
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.profile) {
+                throw new Error(data.message || 'Your account could not be loaded.');
+            }
+            return data.profile;
+        }).then(async profile => {
+            if (!profile) return;
+            accountProfile = profile;
+            csrfToken = profile.csrfToken || '';
+            const artist = profile.role === 'Artist';
+            const home = artist
+                ? '/MelodyMatch/Frontend/html/artist/artist_homepage.html'
+                : '/MelodyMatch/Frontend/html/listener/listener_homepage.html';
+            document.getElementById('accountRole').textContent = `${profile.role} account`;
+            document.getElementById('musicNavigation').innerHTML =
+                `<a href="${home}">‹ Back to ${artist ? 'Artist studio' : 'Discover'}</a>` +
+                '<a class="active" href="/MelodyMatch/Frontend/html/playlists.html" aria-current="page">♫ My playlists</a>' +
+                '<a href="/MelodyMatch/Frontend/html/create_playlist.html">＋ Create playlist</a>';
+            document.getElementById('profileLink').href = artist
+                ? '/MelodyMatch/Frontend/html/artist/artist_profile.html'
+                : '/MelodyMatch/Frontend/html/listener/listener_profile.html';
+            document.getElementById('profileInitial').textContent =
+                Array.from(profile.artistName || profile.username || 'M')[0];
+            if (profile.profilePicture) {
+                const picture = document.getElementById('profilePicture');
+                picture.src = profile.profilePicture;
+                picture.alt = `${profile.username} profile picture`;
+                picture.hidden = false;
+                document.getElementById('profileInitial').hidden = true;
+            }
+            const endpoint = new URL('/MelodyMatch/Backend/php/get_my_playlists.php', window.location.origin);
+            if (requestedPlaylistId) endpoint.searchParams.set('playlist_id', requestedPlaylistId);
+            const response = await fetch(endpoint, { headers: { Accept: 'application/json' } });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Your playlists could not be loaded.');
+            }
+            csrfToken = data.csrfToken || csrfToken;
+            playlists = Array.isArray(data.playlists) ? data.playlists : [];
+            if (requestedPlaylistId) {
+                const playlist = playlists.find(item => String(item.id) === requestedPlaylistId);
+                if (!playlist) throw new Error('This playlist could not be found.');
+                document.title = `${playlist.name} | MelodyMatch`;
+                document.getElementById('pageTitle').textContent = playlist.name;
+                document.getElementById('pageDescription').textContent = 'Your playlist';
+                document.getElementById('pageBreadcrumb').innerHTML =
+                    '<a href="/MelodyMatch/Frontend/html/playlists.html">My playlists</a> <span aria-hidden="true">/</span> Playlist';
+                renderPlaylistSongs(playlist);
+            } else {
+                renderPlaylistLibrary();
+            }
+        }).catch(error => {
+            console.error('Could not load playlists.', error);
+            playlistLibrary.hidden = false;
+            playlistSongs.hidden = true;
+            showEmpty(playlistLibrary, error.message || 'Your playlists could not be loaded.');
+        });
+    </script>
+</body>
+
+</html>

@@ -9,6 +9,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/homepage.css?v=20261102-3">
     <link rel="stylesheet" href="/MelodyMatch/Frontend/css/listener-profile.css?v=20261102-1">
+    <link rel="stylesheet" href="/MelodyMatch/Frontend/css/music-library.css?v=20261104-1">
 </head>
 
 <body>
@@ -21,7 +22,10 @@
             <nav aria-label="Artist navigation">
                 <a class="active" href="artist_homepage.html" aria-current="page">✦ Artist studio</a>
                 <a href="artist_profile.html">♫ Your profile</a>
+                <a href="#mySongs">☷ My songs</a>
                 <a href="release_song.html">＋ Release new song</a>
+                <a href="/MelodyMatch/Frontend/html/playlists.html">♫ My playlists</a>
+                <a href="/MelodyMatch/Frontend/html/create_playlist.html">♪ Create playlist</a>
             </nav>
             <div class="profile-sidebar-note">
                 <span class="profile-status-dot" aria-hidden="true"></span>
@@ -61,6 +65,23 @@
                 </div>
             </section>
 
+            <section class="section release-feed artist-dashboard-songs" id="mySongs" aria-labelledby="mySongsHeading">
+                <div class="section-title">
+                    <h3 id="mySongsHeading">My songs</h3>
+                    <div class="song-sort-control">
+                        <span>Sort songs</span>
+                        <div id="dashboardSongSort" role="group" aria-label="Sort your songs">
+                            <button type="button" data-sort="popular" aria-pressed="false">Most Popular</button>
+                            <button type="button" data-sort="oldest" aria-pressed="false">Oldest</button>
+                            <button type="button" data-sort="newest" aria-pressed="true">Newest</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="artist-song-list" id="dashboardSongs" role="list" aria-live="polite">
+                    <p class="empty-state">Loading your songs…</p>
+                </div>
+            </section>
+
             <section class="profile-card" id="artist-profile" aria-labelledby="artistProfileHeading">
                 <div class="profile-card-heading">
                     <div>
@@ -91,6 +112,14 @@
                     <p class="card-description">See your artist bio, links, and released songs as listeners see them.</p>
                     <a class="profile-breadcrumb" id="publicProfileLink" href="artist_public_profile.html">View public artist profile →</a>
                 </article>
+                <article class="profile-card">
+                    <div class="profile-card-heading">
+                        <div><p class="profile-kicker">BUILD A COLLECTION</p><h2>Create a playlist</h2></div>
+                        <span class="section-icon" aria-hidden="true">♪</span>
+                    </div>
+                    <p class="card-description">Curate released tracks into a mood- or genre-based collection.</p>
+                    <a class="profile-breadcrumb" href="/MelodyMatch/Frontend/html/create_playlist.html">Create playlist →</a>
+                </article>
             </section>
         </main>
     </div>
@@ -102,6 +131,10 @@
         const songsContainer = document.getElementById('homepageSongs');
         let saveCsrfToken = '';
         let homepageSongs = [];
+        let dashboardSongs = [];
+        const dashboardSongList = document.getElementById('dashboardSongs');
+        const dashboardSongSort = document.getElementById('dashboardSongSort');
+        let dashboardSort = 'newest';
         const savedTheme = localStorage.getItem('melodyMatchTheme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -180,7 +213,10 @@
             const details = document.createElement('div');
             details.className = 'release-details';
             const title = document.createElement('h4');
-            title.textContent = song.title;
+            const titleLink = document.createElement('a');
+            titleLink.href = `/MelodyMatch/Frontend/html/song_detail.html?song_id=${encodeURIComponent(song.id)}`;
+            titleLink.textContent = song.title;
+            title.append(titleLink);
             const artist = document.createElement('p');
             artist.className = 'release-artist';
             artist.textContent = `${song.artistName} · ${song.genre}`;
@@ -212,6 +248,73 @@
             row.append(cover, details);
             return row;
         }
+
+        function renderDashboardSongs() {
+            const sort = dashboardSort;
+            const songs = [...dashboardSongs];
+            if (sort === 'popular') {
+                songs.sort((first, second) =>
+                    (second.views + second.likes * 2 + second.saves) -
+                    (first.views + first.likes * 2 + first.saves));
+            } else {
+                songs.sort((first, second) => {
+                    const dateDifference = new Date(`${first.releaseDate}T00:00:00`) -
+                        new Date(`${second.releaseDate}T00:00:00`);
+                    const idDifference = first.id - second.id;
+                    return sort === 'oldest' ? dateDifference || idDifference : -dateDifference || -idDifference;
+                });
+            }
+            dashboardSongList.replaceChildren();
+            if (!songs.length) {
+                const empty = document.createElement('p');
+                empty.className = 'empty-state';
+                empty.textContent = 'Your releases will appear here.';
+                dashboardSongList.append(empty);
+                return;
+            }
+            songs.forEach(song => {
+                const row = document.createElement('article');
+                row.className = 'artist-song-row';
+                row.setAttribute('role', 'listitem');
+                const title = document.createElement('strong');
+                title.textContent = song.title;
+                const tags = document.createElement('span');
+                tags.textContent = [song.genre, song.mood, song.language].filter(Boolean).join(' · ');
+                const stats = document.createElement('span');
+                stats.textContent = `${song.views} views · ${song.likes} likes · ${song.saves} saves`;
+                const status = document.createElement('span');
+                status.className = `artist-song-status ${song.status === 'published' ? 'published' : 'scheduled'}`;
+                status.textContent = song.status === 'published' ? 'Published' : 'Scheduled';
+                const actions = document.createElement('div');
+                actions.className = 'artist-song-actions';
+                if (song.audioUrl && song.status === 'published') {
+                    const details = document.createElement('a');
+                    details.href = `/MelodyMatch/Frontend/html/song_detail.html?song_id=${encodeURIComponent(song.id)}`;
+                    details.textContent = 'Details';
+                    actions.append(details);
+                }
+                if (song.audioUrl) {
+                    const listen = document.createElement('a');
+                    listen.href = song.audioUrl;
+                    listen.target = '_blank';
+                    listen.rel = 'noopener noreferrer';
+                    listen.textContent = 'Listen ↗';
+                    actions.append(listen);
+                }
+                row.append(title, tags, stats, status, actions);
+                dashboardSongList.append(row);
+            });
+        }
+
+        dashboardSongSort.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                dashboardSort = button.dataset.sort;
+                dashboardSongSort.querySelectorAll('button').forEach(option => {
+                    option.setAttribute('aria-pressed', String(option === button));
+                });
+                renderDashboardSongs();
+            });
+        });
 
         async function toggleSave(song, button) {
             if (!saveCsrfToken) {
@@ -276,6 +379,24 @@
             message.className = 'release-empty';
             message.textContent = 'Released songs could not be loaded. Please refresh the page.';
             songsContainer.append(message);
+        });
+
+        fetch('/MelodyMatch/Backend/php/get_artist_songs.php', {
+            headers: { Accept: 'application/json' }
+        }).then(async response => {
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Your songs could not be loaded.');
+            }
+            dashboardSongs = Array.isArray(result.songs) ? result.songs : [];
+            renderDashboardSongs();
+        }).catch(error => {
+            console.error('Could not load artist dashboard songs.', error);
+            dashboardSongList.replaceChildren();
+            const message = document.createElement('p');
+            message.className = 'empty-state';
+            message.textContent = error.message || 'Your songs could not be loaded.';
+            dashboardSongList.append(message);
         });
 
     </script>
