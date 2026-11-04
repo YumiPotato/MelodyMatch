@@ -253,10 +253,18 @@
                 ? '/MelodyMatch/Frontend/html/artist/artist_homepage.html'
                 : '/MelodyMatch/Frontend/html/listener/listener_homepage.html';
             document.getElementById('accountRole').textContent = `${profile.role} account`;
-            document.getElementById('musicNavigation').innerHTML =
-                `<a href="${home}">‹ Back to ${artist ? 'Artist studio' : 'Discover'}</a>` +
-                '<a class="active" href="/MelodyMatch/Frontend/html/playlists.html" aria-current="page">♫ My playlists</a>' +
-                '<a href="/MelodyMatch/Frontend/html/create_playlist.html">＋ Create playlist</a>';
+            document.getElementById('musicNavigation').innerHTML = artist
+                ? '<a href="/MelodyMatch/Frontend/html/artist/artist_homepage.html">✦ Artist studio</a>' +
+                    '<a href="/MelodyMatch/Frontend/html/artist/artist_profile.html">♫ Artist profile</a>' +
+                    '<a href="/MelodyMatch/Frontend/html/artist/artist_songs.html">☷ My songs</a>' +
+                    '<a href="/MelodyMatch/Frontend/html/artist/release_song.html">＋ Release new song</a>' +
+                    '<a class="active" href="/MelodyMatch/Frontend/html/playlists.html" aria-current="page">♫ My playlists</a>' +
+                    '<a href="/MelodyMatch/Frontend/html/create_playlist.html">♪ Create playlist</a>'
+                : `<a href="${home}#latestReleases">✦ Discover</a>` +
+                    '<a class="active" href="/MelodyMatch/Frontend/html/playlists.html" aria-current="page">♪ My playlists</a>' +
+                    `<a href="${home}#recentlyExploredArtists">☾ Artists</a>` +
+                    `<a href="${home}#featuredPlaylists">♡ Library</a>` +
+                    '<a href="/MelodyMatch/Frontend/html/create_playlist.html">＋ Create playlist</a>';
             document.getElementById('profileLink').href = artist
                 ? '/MelodyMatch/Frontend/html/artist/artist_profile.html'
                 : '/MelodyMatch/Frontend/html/listener/listener_profile.html';

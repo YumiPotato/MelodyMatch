@@ -13,6 +13,119 @@
     text-decoration: none;
 }
 
+.artist-songs-view {
+    min-width: 0;
+}
+
+.artist-songs-view[hidden] {
+    display: none;
+}
+
+.artist-songs-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+}
+
+.artist-songs-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.artist-songs-table th,
+.artist-songs-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.artist-songs-table th {
+    background: var(--light-pink);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.artist-songs-table td {
+    font-size: 12px;
+}
+
+.artist-songs-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.artist-songs-list {
+    display: grid;
+    gap: 12px;
+}
+
+.artist-songs-list-item {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+}
+
+.artist-songs-list-item h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+}
+
+.artist-songs-list-item dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px 16px;
+    margin: 0;
+}
+
+.artist-songs-list-item dl div {
+    min-width: 0;
+}
+
+.artist-songs-list-item dt {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.artist-songs-list-item dd {
+    margin: 2px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+}
+
+.artist-songs-view-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+
+.artist-songs-view-toggle button {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.artist-songs-view-toggle button[aria-pressed="true"] {
+    border-color: var(--primary);
+    background: var(--light-pink);
+    color: var(--primary-hover);
+}
+
+.artist-songs-view-toggle button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
 .artist-activity-stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
